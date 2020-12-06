@@ -1,6 +1,6 @@
 #include "Rivista.h"
 
-Rivista::Rivista()
+Rivista::Rivista() : Base(), editore(""), volume(0)
 {
 
 }

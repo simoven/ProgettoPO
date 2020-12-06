@@ -1,6 +1,6 @@
 #include "Conferenza.h"
 
-Conferenza::Conferenza()
+Conferenza::Conferenza() : Base(), luogo(""), numPartecipanti(0)
 {
 
 }
