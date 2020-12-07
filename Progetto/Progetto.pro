@@ -12,6 +12,7 @@ SOURCES += \
     Articolo.cpp \
     Autore.cpp \
     Conferenza.cpp \
+    Gestore.cpp \
     Rivista.cpp \
     main.cpp \
     mainwindow.cpp
@@ -21,6 +22,7 @@ HEADERS += \
     Autore.h \
     Base.h \
     Conferenza.h \
+    Gestore.h \
     Rivista.h \
     mainwindow.h
 
@@ -31,3 +33,6 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    res.qrc

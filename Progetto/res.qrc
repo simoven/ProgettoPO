@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/RivistaColor.png</file>
+        <file>res/ConferenzaColor.png</file>
+        <file>res/AutoreColor.png</file>
+        <file>res/ArticoloColor.png</file>
+    </qresource>
+</RCC>
