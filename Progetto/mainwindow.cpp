@@ -18,10 +18,99 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    for(int i = 0; i < ui->widgetArticolo->count(); i++)
+        delete ui->widgetArticolo->item(i);
+
+    for(int i = 0; i < ui->widgetAutore->count(); i++)
+        delete ui->widgetAutore->item(i);
+
+    for(int i = 0; i < ui->widgetRivista->count(); i++)
+        delete ui->widgetRivista->item(i);
+
+    for(int i = 0; i < ui->widgetConferenza->count(); i++)
+        delete ui->widgetConferenza->item(i);
+
 }
 
+void MainWindow::hide()
+{
+    ui->label1->setText(""); ui->lineEdit1->setVisible(false);
+    ui->label2->setText(""); ui->lineEdit2->setVisible(false);
+    ui->label3->setText(""); ui->lineEdit3->setVisible(false);
+    ui->label4->setText(""); ui->plainText->setVisible(false);
+    ui->label5->setText(""); ui->spinBox->setVisible(false);
+    ui->label6->setText(""); ui->doubleSpinBox->setVisible(false);
+    ui->label7->setText(""); ui->calendarWidget->setVisible(false);
+    ui->bottoneRimuovi->setVisible(false);
+}
+
+//Bottoni vari
+
+void MainWindow::on_SezioneA_clicked()
+{
+    ui->mainStacked->setCurrentWidget(ui->pageMain);
+}
+
+void MainWindow::on_SezioneB_clicked()
+{
+    ui->mainStacked->setCurrentWidget(ui->page2);
+}
+
+void MainWindow::on_AutoreButton_clicked()
+{
+    hide();
+    ui->listStacked->setCurrentWidget(ui->pageAutore);
+    ui->labelStacked->setText("Autori : ");
+    ui->label1->setText("Nome"); ui->lineEdit1->setVisible(true);
+    ui->label2->setText("Cognome"); ui->lineEdit2->setVisible(true);
+    ui->label4->setText("Afferenze"); ui->plainText->setVisible(true);
+}
+
+void MainWindow::on_ArticoloButton_clicked()
+{
+    hide();
+    ui->listStacked->setCurrentWidget(ui->pageArticolo);
+    ui->labelStacked->setText("Articoli : ");
+    ui->label1->setText("Titolo"); ui->lineEdit1->setVisible(true);
+    ui->label4->setText("Keyword"); ui->plainText->setVisible(true);
+    ui->label5->setText("Pagine"); ui->spinBox->setVisible(true);
+    ui->label6->setText("Prezzo"); ui->doubleSpinBox->setVisible(true);
+}
+
+void MainWindow::on_ConferenzaButton_clicked()
+{
+    hide();
+    ui->listStacked->setCurrentWidget(ui->pageConferenza);
+    ui->labelStacked->setText("Conferenze : ");
+    ui->label1->setText("Nome"); ui->lineEdit1->setVisible(true);
+    ui->label2->setText("Acronimo"); ui->lineEdit2->setVisible(true);
+    ui->label3->setText("Luogo"); ui->lineEdit3->setVisible(true);
+    ui->label4->setText("Organizzatori"); ui->plainText->setVisible(true);
+    ui->label5->setText("Partecipanti"); ui->spinBox->setVisible(true);
+    ui->label7->setText("Data"); ui->calendarWidget->setVisible(true);
+}
+
+void MainWindow::on_RivistaButton_clicked()
+{
+    hide();
+    ui->listStacked->setCurrentWidget(ui->pageRivista);
+    ui->labelStacked->setText("Riviste : ");
+    ui->label1->setText("Nome"); ui->lineEdit1->setVisible(true);
+    ui->label2->setText("Acronimo"); ui->lineEdit2->setVisible(true);
+    ui->label3->setText("Editore"); ui->lineEdit3->setVisible(true);
+    ui->label5->setText("Volume"); ui->spinBox->setVisible(true);
+    ui->label7->setText("Data"); ui->calendarWidget->setVisible(true);
+}
+
+//Fine bottoni vari
+
+void MainWindow::on_bottoneAggiungi_clicked()
+{
+    QListWidgetItem* item = new QListWidgetItem;
+}

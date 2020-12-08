@@ -14,6 +14,8 @@ along with ProgettoPO.  If not, see <http://www.gnu.org/licenses/>.*/
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "Gestore.h"
+#include <QDebug>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,8 +29,20 @@ class MainWindow : public QMainWindow
         MainWindow(QWidget *parent = nullptr);
         ~MainWindow();
 
-    private:
-        Ui::MainWindow *ui;
+    private slots:
+            void on_SezioneA_clicked();
+            void on_SezioneB_clicked();
+
+            void on_AutoreButton_clicked();
+            void on_ArticoloButton_clicked();
+            void on_ConferenzaButton_clicked();
+            void on_RivistaButton_clicked();
+
+            void on_bottoneAggiungi_clicked();
+
+private:
+            Ui::MainWindow *ui;
+            void hide();
 };
 
 #endif // MAINWINDOW_H
