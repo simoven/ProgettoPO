@@ -20,6 +20,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->mainStacked->setCurrentWidget(ui->pageMain);
     hide();
+
+    connect(this, SIGNAL(widgetClicked(QListWidget*)), this, SLOT(onWidgetClicked(QListWidget*)));
+    connect(this, SIGNAL(rimuoviItem(QListWidget*)), this, SLOT(onRimuoviItem(QListWidget*)));
 }
 
 MainWindow::~MainWindow()
@@ -274,3 +277,86 @@ void MainWindow::on_bottoneAggiungi_clicked()
 
     svuotaLineEdit();
 }
+
+void MainWindow::on_widgetAutore_itemClicked(QListWidgetItem*)
+{
+    emit widgetClicked(ui->widgetAutore);
+}
+
+void MainWindow::on_widgetRivista_itemClicked(QListWidgetItem*)
+{
+    emit widgetClicked(ui->widgetRivista);
+}
+
+void MainWindow::on_widgetConferenza_itemClicked(QListWidgetItem*)
+{
+    emit widgetClicked(ui->widgetConferenza);
+}
+
+void MainWindow::on_widgetArticolo_itemClicked(QListWidgetItem*)
+{
+    emit widgetClicked(ui->widgetArticolo);
+}
+
+void MainWindow::onWidgetClicked(QListWidget* itm)
+{
+    //Con un puntatore a list widget controllo se c'è un elemento checked per attivare il bottone rimuovi
+    bool itmChecked = false;
+    for(int i = 0; i < itm->count(); i++)
+    {
+        if(itm->item(i)->checkState() == Qt::Checked)
+        {
+            itmChecked = true;
+            break;
+        }
+    }
+
+    if(itmChecked)
+        ui->bottoneRimuovi->setVisible(true);
+    else
+        ui->bottoneRimuovi->setVisible(false);
+}
+
+void MainWindow::on_bottoneRimuovi_clicked()
+{
+    //Quando premo il bottone rimuovi passo il puntatore della list widget attiva in quel momento
+    //Capisco qual è la lista attiva tramite il current widget dello stackedWidget
+
+    QListWidget* itm;
+    if(ui->listStacked->currentWidget() == ui->widgetArticolo->parent())
+        itm = ui->widgetArticolo;
+
+    else if(ui->listStacked->currentWidget() == ui->widgetConferenza->parent())
+        itm = ui->widgetConferenza;
+
+    else if(ui->listStacked->currentWidget() == ui->widgetAutore->parent())
+        itm = ui->widgetAutore;
+
+    else
+        itm = ui->widgetRivista;
+
+    emit rimuoviItem(itm);
+}
+
+void MainWindow::onRimuoviItem(QListWidget* itm)
+{
+    //Itm è un puntatore alla lista attiva
+    for(int i = 0; i < itm->count(); i++)
+    {
+        if(itm->item(i)->checkState() == Qt::Checked)
+        {
+            //TODO
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
