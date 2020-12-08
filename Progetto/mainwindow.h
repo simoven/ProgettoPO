@@ -45,6 +45,7 @@ class MainWindow : public QMainWindow
             Ui::MainWindow *ui;
             Gestore gestore;
             void hide();
+            void svuotaLineEdit();
 };
 
 #endif // MAINWINDOW_H

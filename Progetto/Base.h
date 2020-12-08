@@ -14,6 +14,7 @@ class Base
         QString getNome() const { return nome; }
         QString getAcronimo() const { return acronimo; }
         QDate getData() const { return data; }
+        QString stampaData() const { return data.toString(Qt::ISODate); }
 
         void setData(QDate date) { data = date; }
         void setNome(QString name) { nome = name; }

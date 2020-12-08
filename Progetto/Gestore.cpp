@@ -65,7 +65,7 @@ Gestore& Gestore::operator=(const Gestore &G)
 void Gestore::aggiungiArticolo(const Articolo &article)
 {
     listArticoli.push_back(new Articolo(article));
-    //listArticoli.back()->setIdentificativo(nArticoli++);
+    listArticoli.back()->setIdentificativo(nArticoli++);
 }
 
 void Gestore::aggiungiAutore(const Autore &author)
@@ -73,4 +73,25 @@ void Gestore::aggiungiAutore(const Autore &author)
     listAutori.push_back(new Autore(author));
     listAutori.back()->setIdentificativo(nAutori++);
 }
+
+void Gestore::aggiungiConferenza(const Conferenza &conference)
+{
+    listConferenze.push_back(new Conferenza(conference));
+}
+
+void Gestore::aggiungiRivista(const Rivista &paper)
+{
+    listRiviste.push_back(new Rivista(paper));
+}
+
+
+
+
+
+
+
+
+
+
+
 

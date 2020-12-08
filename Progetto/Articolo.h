@@ -11,9 +11,9 @@ class Articolo
         QString identificativo, titolo;
         int nPagine;
         double prezzo;
-        QList <Autore*> listAutori;
+        QList <QString> listAutori;
         QList <QString> listKeyword;
-        QList <Articolo*> listCorrelati;
+        QList <QString> listCorrelati;
         Tipo pubblicatoPer;
 
     public :
@@ -22,18 +22,18 @@ class Articolo
         QString getTitolo() const;
         int getNumPagine() const;
         double getPrezzo() const;
-        const QList <Autore*>& getAutori() const;
+        const QList <QString>& getAutori() const;
         const QList <QString>& getKeyword() const;
-        const QList <Articolo*>& getCorrelati() const;
+        const QList <QString>& getCorrelati() const;
         Tipo getPubblicato() const;
 
-        void setIdentificativo();
+        void setIdentificativo(int number);
         void setTitolo(QString title);
         void setNumPagine(int numPag);
         void setPrezzo(double price);
-        void addAutore(Autore* author);
+        void addAutore(QString author);
         void addKeyword(QString keyword);
-        void addCorrelato(Articolo* corr);
+        void addCorrelato(QString corr);
         void setTipo(Tipo pubblicato);
 };
 

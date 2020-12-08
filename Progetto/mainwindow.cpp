@@ -18,20 +18,17 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->mainStacked->setCurrentWidget(ui->pageMain);
     hide();
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
     for(int i = 0; i < ui->widgetArticolo->count(); i++)
         delete ui->widgetArticolo->item(i);
 
     for(int i = 0; i < ui->widgetAutore->count(); i++)
-    {
-        qDebug() << ui->widgetAutore->item(i)->text();
         delete ui->widgetAutore->item(i);
-    }
 
     for(int i = 0; i < ui->widgetRivista->count(); i++)
         delete ui->widgetRivista->item(i);
@@ -39,6 +36,18 @@ MainWindow::~MainWindow()
     for(int i = 0; i < ui->widgetConferenza->count(); i++)
         delete ui->widgetConferenza->item(i);
 
+    delete ui;
+
+}
+
+void MainWindow::svuotaLineEdit()
+{
+    ui->lineEdit1->setText("");
+    ui->lineEdit2->setText("");
+    ui->lineEdit3->setText("");
+    ui->plainText->setPlainText("");
+    ui->spinBox->setValue(0);
+    ui->doubleSpinBox->setValue(0);
 }
 
 void MainWindow::hide()
@@ -73,6 +82,9 @@ void MainWindow::on_AutoreButton_clicked()
     ui->label1->setText("Nome"); ui->lineEdit1->setVisible(true);
     ui->label2->setText("Cognome"); ui->lineEdit2->setVisible(true);
     ui->label4->setText("Afferenze"); ui->plainText->setVisible(true);
+    ui->plainText->setPlaceholderText("Scrivi un'afferenza per linea");
+
+    ui->lineEdit2->setPlaceholderText("");
 }
 
 void MainWindow::on_ArticoloButton_clicked()
@@ -81,7 +93,11 @@ void MainWindow::on_ArticoloButton_clicked()
     ui->listStacked->setCurrentWidget(ui->pageArticolo);
     ui->labelStacked->setText("Articoli : ");
     ui->label1->setText("Titolo"); ui->lineEdit1->setVisible(true);
-    ui->label4->setText("Keyword"); ui->plainText->setVisible(true);
+    ui->label2->setText("Keyword"); ui->lineEdit2->setVisible(true);
+    ui->lineEdit2->setPlaceholderText("Scrivi le keyword separate da virgole, senza spazi");
+
+    ui->label4->setText("Autori"); ui->plainText->setVisible(true);
+    ui->plainText->setPlaceholderText("Scrivi un autore per riga");
     ui->label5->setText("Pagine"); ui->spinBox->setVisible(true);
     ui->label6->setText("Prezzo"); ui->doubleSpinBox->setVisible(true);
 }
@@ -95,8 +111,12 @@ void MainWindow::on_ConferenzaButton_clicked()
     ui->label2->setText("Acronimo"); ui->lineEdit2->setVisible(true);
     ui->label3->setText("Luogo"); ui->lineEdit3->setVisible(true);
     ui->label4->setText("Organizzatori"); ui->plainText->setVisible(true);
+    ui->plainText->setPlaceholderText("Scrivi un organizzatore per riga");
+
     ui->label5->setText("Partecipanti"); ui->spinBox->setVisible(true);
     ui->label7->setText("Data"); ui->calendarWidget->setVisible(true);
+
+    ui->lineEdit2->setPlaceholderText("");
 }
 
 void MainWindow::on_RivistaButton_clicked()
@@ -109,13 +129,14 @@ void MainWindow::on_RivistaButton_clicked()
     ui->label3->setText("Editore"); ui->lineEdit3->setVisible(true);
     ui->label5->setText("Volume"); ui->spinBox->setVisible(true);
     ui->label7->setText("Data"); ui->calendarWidget->setVisible(true);
+
+    ui->lineEdit2->setPlaceholderText("");
 }
 
 //Fine bottoni vari
 
 void MainWindow::on_bottoneAggiungi_clicked()
 {
-    qDebug() << "QUI";
     QListWidgetItem* item = new QListWidgetItem;
     if(ui->AutoreButton->isChecked())
     {
@@ -123,6 +144,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
         author.setNome(ui->lineEdit1->text());
         author.setCognome(ui->lineEdit2->text());
         QString text = ui->plainText->toPlainText();
+        //Aggiungo \n altrimenti la tokenizzazione non prende l'ultima stringa
         text += '\n';
         int len = 0;
         int idx = 0;
@@ -132,7 +154,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
             if(text [i] == '\n')
             {
                 author.addAfferenze(text.mid(idx, len));
-                qDebug() << text.mid(idx, len);
                 idx = i+1;
                 len = 0;
             }
@@ -145,17 +166,102 @@ void MainWindow::on_bottoneAggiungi_clicked()
         item->setIcon(QIcon(":/res/AutoreColor.png"));
         item->setCheckState(Qt::Unchecked);
         ui->widgetAutore->addItem(item);
+
     }
     else if(ui->ArticoloButton->isChecked())
     {
+        Articolo article;
+        article.setTitolo(ui->lineEdit1->text());
+        QString keyword = ui->lineEdit2->text();
+        keyword += ',';
+        QString autori = ui->plainText->toPlainText();
+        autori += '\n';
+
+        //Tokenizzo le keyword
+        int len = 0;
+        int idx = 0;
+        for(int i = 0; i < keyword.length(); i++)
+        {
+            if(keyword [i] == ',')
+            {
+                article.addKeyword(keyword.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
+        }
+
+        //Tokenizzo il plain text
+        len = 0;
+        idx = 0;
+        for(int i = 0; i < autori.length(); i++)
+        {
+            if(autori [i] == '\n')
+            {
+                article.addAutore(autori.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
+        }
+
+        article.setNumPagine(ui->spinBox->value());
+        article.setPrezzo(ui->doubleSpinBox->value());
+        gestore.aggiungiArticolo(article);
+        item->setText(article.getTitolo());
+        item->setIcon(QIcon(":/res/ArticoloColor.png"));
+        item->setCheckState(Qt::Unchecked);
+        ui->widgetArticolo->addItem(item);
 
     }
     else if(ui->ConferenzaButton->isChecked())
     {
+        Conferenza conference;
+        conference.setData(ui->calendarWidget->selectedDate());
+        conference.setNome(ui->lineEdit1->text());
+        conference.setAcronimo(ui->lineEdit2->text());
+        conference.setLuogo(ui->lineEdit3->text());
+        conference.setPartecipanti(ui->spinBox->value());
+        QString organizzatori = ui->plainText->toPlainText();
+        organizzatori += 'n';
+
+        //Tokenizzo gli organizzatori
+        int len = 0;
+        int idx = 0;
+        for(int i = 0; i < organizzatori.length(); i++)
+        {
+            if(organizzatori [i] == '\n')
+            {
+                conference.addOrganizzatore(organizzatori.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
+        }
+
+        item->setText(conference.getNome());
+        item->setCheckState(Qt::Unchecked);
+        item->setIcon(QIcon(":/res/ConferenzaColor.png"));
+        gestore.aggiungiConferenza(conference);
+        ui->widgetConferenza->addItem(item);
 
     }
     else if(ui->RivistaButton->isChecked())
     {
+        Rivista paper;
+        paper.setNome(ui->lineEdit1->text());
+        paper.setAcronimo(ui->lineEdit2->text());
+        paper.setEditore(ui->lineEdit3->text());
+        paper.setVolume(ui->spinBox->value());
+        paper.setData(ui->calendarWidget->selectedDate());
+        gestore.aggiungiRivista(paper);
+        item->setText(paper.getNome());
+        item->setIcon(QIcon(":/res/RivistaColor.png"));
+        item->setCheckState(Qt::Unchecked);
+        ui->widgetRivista->addItem(item);
 
     }
     else
@@ -165,4 +271,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
         QMessageBox msg(QMessageBox::Critical, "Attenzione", "Devi selezionare un'opzione");
         msg.exec();
     }
+
+    svuotaLineEdit();
 }
