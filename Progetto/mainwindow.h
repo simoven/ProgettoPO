@@ -16,6 +16,7 @@ along with ProgettoPO.  If not, see <http://www.gnu.org/licenses/>.*/
 #include <QMainWindow>
 #include "Gestore.h"
 #include <QDebug>
+#include <QMessageBox>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -40,8 +41,9 @@ class MainWindow : public QMainWindow
 
             void on_bottoneAggiungi_clicked();
 
-private:
+    private:
             Ui::MainWindow *ui;
+            Gestore gestore;
             void hide();
 };
 

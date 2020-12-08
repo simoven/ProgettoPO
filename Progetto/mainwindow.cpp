@@ -28,7 +28,10 @@ MainWindow::~MainWindow()
         delete ui->widgetArticolo->item(i);
 
     for(int i = 0; i < ui->widgetAutore->count(); i++)
+    {
+        qDebug() << ui->widgetAutore->item(i)->text();
         delete ui->widgetAutore->item(i);
+    }
 
     for(int i = 0; i < ui->widgetRivista->count(); i++)
         delete ui->widgetRivista->item(i);
@@ -112,5 +115,54 @@ void MainWindow::on_RivistaButton_clicked()
 
 void MainWindow::on_bottoneAggiungi_clicked()
 {
+    qDebug() << "QUI";
     QListWidgetItem* item = new QListWidgetItem;
+    if(ui->AutoreButton->isChecked())
+    {
+        Autore author;
+        author.setNome(ui->lineEdit1->text());
+        author.setCognome(ui->lineEdit2->text());
+        QString text = ui->plainText->toPlainText();
+        text += '\n';
+        int len = 0;
+        int idx = 0;
+        //Tokenizzo il plain text
+        for(int i = 0; i < text.length(); i++)
+        {
+            if(text [i] == '\n')
+            {
+                author.addAfferenze(text.mid(idx, len));
+                qDebug() << text.mid(idx, len);
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
+        }
+
+        gestore.aggiungiAutore(author);
+        item->setText(author.getNome() + " " + author.getCognome());
+        item->setIcon(QIcon(":/res/AutoreColor.png"));
+        item->setCheckState(Qt::Unchecked);
+        ui->widgetAutore->addItem(item);
+    }
+    else if(ui->ArticoloButton->isChecked())
+    {
+
+    }
+    else if(ui->ConferenzaButton->isChecked())
+    {
+
+    }
+    else if(ui->RivistaButton->isChecked())
+    {
+
+    }
+    else
+    {
+        delete item;
+        item = nullptr;
+        QMessageBox msg(QMessageBox::Critical, "Attenzione", "Devi selezionare un'opzione");
+        msg.exec();
+    }
 }

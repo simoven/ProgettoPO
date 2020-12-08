@@ -16,7 +16,7 @@ class Autore
         QString getCognome() const;
         const QList <QString>& getAfferenze() const;
         void setNome(QString name);
-        void setIdentificativo();
+        void setIdentificativo(int number);
         void setCognome(QString surname);
         void addAfferenze(QString workplace);
 };

@@ -137,7 +137,7 @@
     <item>
      <widget class="QStackedWidget" name="mainStacked">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageMain">
        <layout class="QHBoxLayout" name="horizontalLayout_4">
@@ -317,9 +317,6 @@
                 <property name="text">
                  <string>Autore</string>
                 </property>
-                <property name="checked">
-                 <bool>true</bool>
-                </property>
                </widget>
               </item>
               <item>
@@ -448,7 +445,18 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page2"/>
+      <widget class="QWidget" name="page2">
+       <widget class="QComboBox" name="comboBox">
+        <property name="geometry">
+         <rect>
+          <x>250</x>
+          <y>120</y>
+          <width>86</width>
+          <height>25</height>
+         </rect>
+        </property>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>

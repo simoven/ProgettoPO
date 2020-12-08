@@ -5,6 +5,7 @@
 #include "Autore.h"
 #include "Conferenza.h"
 #include "Rivista.h"
+#include <QDebug>
 
 class Gestore
 {
@@ -13,6 +14,12 @@ class Gestore
         QList <Autore*> listAutori;
         QList <Conferenza*> listConferenze;
         QList <Rivista*> listRiviste;
+
+        int nAutori;
+        int nArticoli;
+
+        void svuota();
+        void copia(const Gestore& G);
 
     public :
         Gestore();
