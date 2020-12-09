@@ -21,8 +21,19 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mainStacked->setCurrentWidget(ui->pageMain);
     hide();
 
-    connect(this, SIGNAL(widgetClicked(QListWidget*)), this, SLOT(onWidgetClicked(QListWidget*)));
     connect(this, SIGNAL(rimuoviItem(QListWidget*)), this, SLOT(onRimuoviItem(QListWidget*)));
+
+    connect(ui->widgetAutore, &QListWidget::itemClicked, this, &MainWindow::onWidgetClicked);
+    connect(ui->widgetArticolo, &QListWidget::itemClicked, this, &MainWindow::onWidgetClicked);
+    connect(ui->widgetRivista, &QListWidget::itemClicked, this, &MainWindow::onWidgetClicked);
+    connect(ui->widgetConferenza, &QListWidget::itemClicked, this, &MainWindow::onWidgetClicked);
+
+    connect(ui->widgetAutore, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
+    connect(ui->widgetArticolo, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
+    connect(ui->widgetRivista, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
+    connect(ui->widgetConferenza, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
+
+
 }
 
 MainWindow::~MainWindow()
@@ -304,34 +315,10 @@ void MainWindow::on_bottoneAggiungi_clicked()
 }
 
 
-void MainWindow::on_widgetAutore_itemClicked(QListWidgetItem* item)
+void MainWindow::onWidgetClicked()
 {
-    //In base alla listwidget che clicco chiamo la funzione che controlla gli elementi checked
-    Q_UNUSED(item);
-    emit widgetClicked(ui->widgetAutore);
-}
-
-void MainWindow::on_widgetRivista_itemClicked(QListWidgetItem* item)
-{
-    Q_UNUSED(item);
-    emit widgetClicked(ui->widgetRivista);
-}
-
-void MainWindow::on_widgetConferenza_itemClicked(QListWidgetItem* item)
-{
-    Q_UNUSED(item);
-    emit widgetClicked(ui->widgetConferenza);
-}
-
-void MainWindow::on_widgetArticolo_itemClicked(QListWidgetItem* item)
-{
-    Q_UNUSED(item);
-    emit widgetClicked(ui->widgetArticolo);
-}
-
-void MainWindow::onWidgetClicked(QListWidget* itm)
-{
-    //Con un puntatore a list widget controllo se c'è un elemento checked per attivare il bottone rimuovi
+    //In base alla list widget che chiama la funzione controllo gli elementi checked per attivare il bottone rimuovi
+    QListWidget* itm = qobject_cast<QListWidget*> (sender());
     bool itmChecked = false;
     for(int i = 0; i < itm->count(); i++)
     {
@@ -398,13 +385,33 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
     ui->bottoneRimuovi->setVisible(false);
 }
 
+void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
+{
+    QListWidget* ptrList = qobject_cast <QListWidget*> (sender());
 
+    int idx = 0;
+    for(int i = 0; i < ptrList->count(); i++)
+    {
+        if(ptrList->item(i) == item)
+        {
+            idx = i;
+            break;
+        }
+    }
 
+    //Capisco da quale classe è partito il segnale
+    classType tipo;
+    if(ptrList == ui->widgetArticolo)
+        tipo = cArticolo;
+    else if(ptrList == ui->widgetAutore)
+        tipo = cAutore;
+    else if(ptrList == ui->widgetConferenza)
+        tipo = cConferenza;
+    else
+        tipo = cRivista;
 
-
-
-
-
-
-
+    itemDialog dialog(idx, tipo, &gestore, item);
+    dialog.setModal(true);
+    dialog.exec();
+}
 

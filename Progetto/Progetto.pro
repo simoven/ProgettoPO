@@ -14,6 +14,7 @@ SOURCES += \
     Conferenza.cpp \
     Gestore.cpp \
     Rivista.cpp \
+    itemDialog.cpp \
     main.cpp \
     mainwindow.cpp
 
@@ -24,9 +25,11 @@ HEADERS += \
     Conferenza.h \
     Gestore.h \
     Rivista.h \
+    itemDialog.h \
     mainwindow.h
 
 FORMS += \
+    itemDialog.ui \
     mainwindow.ui
 
 # Default rules for deployment.

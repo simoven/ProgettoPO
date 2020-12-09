@@ -18,6 +18,7 @@ along with ProgettoPO.  If not, see <http://www.gnu.org/licenses/>.*/
 #include <QDebug>
 #include <QMessageBox>
 #include <QListWidgetItem>
+#include <itemDialog.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -41,14 +42,12 @@ class MainWindow : public QMainWindow
             void on_RivistaButton_clicked();
             void on_bottoneAggiungi_clicked();
 
-            void on_widgetAutore_itemClicked(QListWidgetItem *item);
-            void on_widgetRivista_itemClicked(QListWidgetItem *item);
-            void on_widgetConferenza_itemClicked(QListWidgetItem *item);
-            void on_widgetArticolo_itemClicked(QListWidgetItem *item);
-            void onWidgetClicked(QListWidget* itm);
+            void onWidgetClicked();
+            void onWidgetDoubleClicked(QListWidgetItem* item);
 
             void on_bottoneRimuovi_clicked();
             void onRimuoviItem(QListWidget* itm);
+
 
     signals:
             void widgetClicked(QListWidget* itm);

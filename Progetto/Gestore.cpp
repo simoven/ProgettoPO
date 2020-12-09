@@ -141,6 +141,26 @@ void Gestore::rimuoviRivista(int idx)
     listRiviste.erase(listRiviste.begin() + idx);
 }
 
+const QList <Articolo*> Gestore::getArticoli() const
+{
+    return listArticoli;
+}
+
+const QList <Autore*> Gestore::getAutori() const
+{
+    return listAutori;
+}
+
+const QList <Conferenza*> Gestore::getConferenze() const
+{
+    return listConferenze;
+}
+
+const QList <Rivista*> Gestore::getRiviste() const
+{
+    return listRiviste;
+}
+
 
 
 

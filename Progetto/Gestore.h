@@ -38,9 +38,9 @@ class Gestore
         void rimuoviRivista(int idx);
 
         const QList <Articolo*> getArticoli() const;
-        QList <Autore*> getAutori() const;
-        QList <Conferenza*> getConferenze() const;
-        QList <Rivista*> getRiviste() const;
+        const QList <Autore*> getAutori() const;
+        const QList <Conferenza*> getConferenze() const;
+        const QList <Rivista*> getRiviste() const;
 };
 
 #endif // GESTORE_H
