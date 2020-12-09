@@ -15,6 +15,7 @@ class Articolo
         QList <QString> listKeyword;
         QList <QString> listCorrelati;
         Tipo pubblicatoPer;
+        QString nomePubblicato;
 
     public :
         Articolo();
@@ -26,6 +27,7 @@ class Articolo
         const QList <QString>& getKeyword() const;
         const QList <QString>& getCorrelati() const;
         Tipo getPubblicato() const;
+        QString getNomePubblicato() const;
 
         void setIdentificativo(int number);
         void setTitolo(QString title);
@@ -35,6 +37,7 @@ class Articolo
         void addKeyword(QString keyword);
         void addCorrelato(QString corr);
         void setTipo(Tipo pubblicato);
+        void setNomePubblicato(QString name);
 
         bool operator==(const Articolo& A) const;
 };

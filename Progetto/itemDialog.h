@@ -10,6 +10,7 @@
 #include <QListWidgetItem>
 #include "Gestore.h"
 #include <QPixmap>
+#include <QMessageBox>
 
 namespace Ui { class itemDialog; }
 
@@ -25,13 +26,17 @@ class itemDialog : public QDialog
 
     private slots:
     void on_bottoneIndietro_clicked();
+    void on_bottoneModifica_clicked();
 
-    private:
+    void on_itmCombo4_currentIndexChanged(int index);
+
+private:
         Ui::itemDialog *ui;
         Autore* author;
         Rivista* paper;
         Conferenza* conference;
         Articolo* article;
+        QListWidgetItem* listItem;
 
         classType type;
         Gestore* ptrGestore;

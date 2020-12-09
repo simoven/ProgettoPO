@@ -73,7 +73,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article)
         return false;
 
     listArticoli.push_back(new Articolo(article));
-    listArticoli.back()->setIdentificativo(nArticoli++);
+    listArticoli.back()->setIdentificativo(++nArticoli);
     return true;
 }
 
@@ -87,7 +87,7 @@ bool Gestore::aggiungiAutore(const Autore &author)
         return false;
 
     listAutori.push_back(new Autore(author));
-    listAutori.back()->setIdentificativo(nAutori++);
+    listAutori.back()->setIdentificativo(++nAutori);
     return true;
 }
 

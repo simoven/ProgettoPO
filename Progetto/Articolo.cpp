@@ -1,6 +1,6 @@
 #include "Articolo.h"
 
-Articolo::Articolo() : titolo(""), nPagine(0), prezzo(0), pubblicatoPer(CONFERENZA) {}
+Articolo::Articolo() : titolo(""), nPagine(0), prezzo(0), pubblicatoPer(CONFERENZA), nomePubblicato("") {}
 
 QString Articolo::getIdentificativo() const { return identificativo; }
 
@@ -18,6 +18,8 @@ const QList <QString>& Articolo::getCorrelati() const { return listCorrelati; }
 
 Tipo Articolo::getPubblicato() const { return pubblicatoPer; }
 
+QString Articolo::getNomePubblicato() const { return nomePubblicato; }
+
 void Articolo::setIdentificativo(int number) { identificativo = QString::number(number); }
 
 void Articolo::setTitolo(QString title) { titolo = title; }
@@ -33,6 +35,8 @@ void Articolo::addKeyword(QString keyword) { listKeyword.push_back(keyword); }
 void Articolo::addCorrelato(QString corr) { listCorrelati.push_back(corr); }
 
 void Articolo::setTipo(Tipo pubblicato) { pubblicatoPer = pubblicato; }
+
+void Articolo::setNomePubblicato(QString name) { nomePubblicato = name; }
 
 bool Articolo::operator==(const Articolo& A) const
 {
