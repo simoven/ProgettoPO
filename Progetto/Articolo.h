@@ -35,6 +35,8 @@ class Articolo
         void addKeyword(QString keyword);
         void addCorrelato(QString corr);
         void setTipo(Tipo pubblicato);
+
+        bool operator==(const Articolo& A) const;
 };
 
 #endif // ARTICOLO_H

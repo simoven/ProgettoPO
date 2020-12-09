@@ -1,6 +1,6 @@
 #include "Articolo.h"
 
-Articolo::Articolo() : titolo(""), nPagine(0), prezzo(0) {}
+Articolo::Articolo() : titolo(""), nPagine(0), prezzo(0), pubblicatoPer(CONFERENZA) {}
 
 QString Articolo::getIdentificativo() const { return identificativo; }
 
@@ -33,3 +33,11 @@ void Articolo::addKeyword(QString keyword) { listKeyword.push_back(keyword); }
 void Articolo::addCorrelato(QString corr) { listCorrelati.push_back(corr); }
 
 void Articolo::setTipo(Tipo pubblicato) { pubblicatoPer = pubblicato; }
+
+bool Articolo::operator==(const Articolo& A) const
+{
+    if(titolo != A.titolo || nPagine != A.nPagine || prezzo != A.prezzo || pubblicatoPer != A.pubblicatoPer)
+        return false;
+
+    return true;
+}

@@ -10,4 +10,12 @@ void Rivista::setEditore(QString editor) { editore = editor; }
 
 void Rivista::setVolume(int vol) { volume = vol; }
 
+bool Rivista::operator==(const Rivista &R) const
+{
+    if(getNome() != R.getNome() || getData() != R.getData() || volume != R.volume)
+        return false;
+
+    return true;
+}
+
 

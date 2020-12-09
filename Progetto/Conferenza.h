@@ -21,6 +21,8 @@ class Conferenza : public Base
         void setLuogo(QString place);
         void addOrganizzatore(QString man);
         void setPartecipanti(int partecipanti);
+
+        bool operator==(const Conferenza& C) const;
 };
 
 #endif // CONFERENZA_H

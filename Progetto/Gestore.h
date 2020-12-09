@@ -27,10 +27,15 @@ class Gestore
         Gestore(const Gestore& G);
         Gestore& operator=(const Gestore& G);
 
-        void aggiungiArticolo(const Articolo& article);
-        void aggiungiAutore(const Autore& author);
-        void aggiungiConferenza(const Conferenza& conference);
-        void aggiungiRivista(const Rivista& paper);
+        bool aggiungiArticolo(const Articolo& article);
+        bool aggiungiAutore(const Autore& author);
+        bool aggiungiConferenza(const Conferenza& conference);
+        bool aggiungiRivista(const Rivista& paper);
+
+        void rimuoviArticolo(int idx);
+        void rimuoviAutore(int idx);
+        void rimuoviConferenza(int idx);
+        void rimuoviRivista(int idx);
 
         const QList <Articolo*> getArticoli() const;
         QList <Autore*> getAutori() const;

@@ -17,3 +17,18 @@ void Autore::setIdentificativo(int number) { identificativo = QString::number(nu
 void Autore::setCognome(QString surname) { cognome = surname; }
 
 void Autore::addAfferenze(QString workplace) { afferenze.push_back(workplace); }
+
+bool Autore::operator==(const Autore &A) const
+{
+    if(nome != A.nome || cognome != A.cognome)
+        return false;
+
+    if(afferenze.size() != A.afferenze.size())
+        return false;
+
+    for(int i = 0; i < afferenze.size(); i++)
+        if(afferenze [i] != A.afferenze [i])
+            return false;
+
+    return true;
+}

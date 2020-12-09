@@ -14,4 +14,12 @@ void Conferenza::addOrganizzatore(QString man) { listOrganizzatori.push_back(man
 
 void Conferenza::setPartecipanti(int partecipanti) { numPartecipanti = partecipanti; }
 
+bool Conferenza::operator==(const Conferenza &C) const
+{
+    if(getNome() != C.getNome() || getData() != C.getData() || luogo != C.luogo)
+        return false;
+
+    return true;
+}
+
 

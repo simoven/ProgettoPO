@@ -19,6 +19,8 @@ class Autore
         void setIdentificativo(int number);
         void setCognome(QString surname);
         void addAfferenze(QString workplace);
+
+        bool operator==(const Autore& A) const;
 };
 
 #endif // AUTORE_H

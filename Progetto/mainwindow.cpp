@@ -138,6 +138,14 @@ void MainWindow::on_RivistaButton_clicked()
 
 //Fine bottoni vari
 
+void errorMsg(QListWidgetItem* item)
+{
+    //Significa che è già presente oppure alcuni campi sono vuoti
+    delete item;
+    QMessageBox msg(QMessageBox::Warning, "Impossibile aggiungere", "Elemento già presente oppure alcuni campi obbligatori sono vuoti");
+    msg.exec();
+}
+
 void MainWindow::on_bottoneAggiungi_clicked()
 {
     QListWidgetItem* item = new QListWidgetItem;
@@ -164,11 +172,16 @@ void MainWindow::on_bottoneAggiungi_clicked()
                 len++;
         }
 
-        gestore.aggiungiAutore(author);
-        item->setText(author.getNome() + " " + author.getCognome());
-        item->setIcon(QIcon(":/res/AutoreColor.png"));
-        item->setCheckState(Qt::Unchecked);
-        ui->widgetAutore->addItem(item);
+        if(gestore.aggiungiAutore(author))
+        {
+            item->setText(author.getNome() + " " + author.getCognome());
+            item->setIcon(QIcon(":/res/AutoreColor.png"));
+            item->setCheckState(Qt::Unchecked);
+            ui->widgetAutore->addItem(item);
+
+        }
+        else
+            errorMsg(item);
 
     }
     else if(ui->ArticoloButton->isChecked())
@@ -212,11 +225,15 @@ void MainWindow::on_bottoneAggiungi_clicked()
 
         article.setNumPagine(ui->spinBox->value());
         article.setPrezzo(ui->doubleSpinBox->value());
-        gestore.aggiungiArticolo(article);
-        item->setText(article.getTitolo());
-        item->setIcon(QIcon(":/res/ArticoloColor.png"));
-        item->setCheckState(Qt::Unchecked);
-        ui->widgetArticolo->addItem(item);
+        if(gestore.aggiungiArticolo(article))
+        {
+            item->setText(article.getTitolo());
+            item->setIcon(QIcon(":/res/ArticoloColor.png"));
+            item->setCheckState(Qt::Unchecked);
+            ui->widgetArticolo->addItem(item);
+        }
+        else
+            errorMsg(item);
 
     }
     else if(ui->ConferenzaButton->isChecked())
@@ -228,7 +245,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
         conference.setLuogo(ui->lineEdit3->text());
         conference.setPartecipanti(ui->spinBox->value());
         QString organizzatori = ui->plainText->toPlainText();
-        organizzatori += 'n';
+        organizzatori += '\n';
 
         //Tokenizzo gli organizzatori
         int len = 0;
@@ -245,11 +262,15 @@ void MainWindow::on_bottoneAggiungi_clicked()
                 len++;
         }
 
-        item->setText(conference.getNome());
-        item->setCheckState(Qt::Unchecked);
-        item->setIcon(QIcon(":/res/ConferenzaColor.png"));
-        gestore.aggiungiConferenza(conference);
-        ui->widgetConferenza->addItem(item);
+        if(gestore.aggiungiConferenza(conference))
+        {
+            item->setText(conference.getNome());
+            item->setCheckState(Qt::Unchecked);
+            item->setIcon(QIcon(":/res/ConferenzaColor.png"));
+            ui->widgetConferenza->addItem(item);
+        }
+        else
+            errorMsg(item);
 
     }
     else if(ui->RivistaButton->isChecked())
@@ -260,12 +281,16 @@ void MainWindow::on_bottoneAggiungi_clicked()
         paper.setEditore(ui->lineEdit3->text());
         paper.setVolume(ui->spinBox->value());
         paper.setData(ui->calendarWidget->selectedDate());
-        gestore.aggiungiRivista(paper);
-        item->setText(paper.getNome());
-        item->setIcon(QIcon(":/res/RivistaColor.png"));
-        item->setCheckState(Qt::Unchecked);
-        ui->widgetRivista->addItem(item);
 
+        if(gestore.aggiungiRivista(paper))
+        {
+            item->setText(paper.getNome());
+            item->setIcon(QIcon(":/res/RivistaColor.png"));
+            item->setCheckState(Qt::Unchecked);
+            ui->widgetRivista->addItem(item);
+        }
+        else
+            errorMsg(item);
     }
     else
     {
@@ -278,23 +303,29 @@ void MainWindow::on_bottoneAggiungi_clicked()
     svuotaLineEdit();
 }
 
-void MainWindow::on_widgetAutore_itemClicked(QListWidgetItem*)
+
+void MainWindow::on_widgetAutore_itemClicked(QListWidgetItem* item)
 {
+    //In base alla listwidget che clicco chiamo la funzione che controlla gli elementi checked
+    Q_UNUSED(item);
     emit widgetClicked(ui->widgetAutore);
 }
 
-void MainWindow::on_widgetRivista_itemClicked(QListWidgetItem*)
+void MainWindow::on_widgetRivista_itemClicked(QListWidgetItem* item)
 {
+    Q_UNUSED(item);
     emit widgetClicked(ui->widgetRivista);
 }
 
-void MainWindow::on_widgetConferenza_itemClicked(QListWidgetItem*)
+void MainWindow::on_widgetConferenza_itemClicked(QListWidgetItem* item)
 {
+    Q_UNUSED(item);
     emit widgetClicked(ui->widgetConferenza);
 }
 
-void MainWindow::on_widgetArticolo_itemClicked(QListWidgetItem*)
+void MainWindow::on_widgetArticolo_itemClicked(QListWidgetItem* item)
 {
+    Q_UNUSED(item);
     emit widgetClicked(ui->widgetArticolo);
 }
 
@@ -316,6 +347,8 @@ void MainWindow::onWidgetClicked(QListWidget* itm)
     else
         ui->bottoneRimuovi->setVisible(false);
 }
+
+
 
 void MainWindow::on_bottoneRimuovi_clicked()
 {
@@ -345,9 +378,24 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
     {
         if(itm->item(i)->checkState() == Qt::Checked)
         {
-            //TODO
+            if(itm->objectName() == "widgetAutore")
+                gestore.rimuoviAutore(i);
+
+            else if(itm->objectName() == "widgetArticolo")
+                gestore.rimuoviArticolo(i);
+
+            else if(itm->objectName() == "widgetConferenza")
+                gestore.rimuoviConferenza(i);
+
+            else
+                gestore.rimuoviRivista(i);
+
+            delete itm->item(i);
+            itm->takeItem(i);
         }
     }
+
+    ui->bottoneRimuovi->setVisible(false);
 }
 
 

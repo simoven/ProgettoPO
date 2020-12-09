@@ -17,6 +17,8 @@ class Rivista : public Base
 
         void setEditore(QString editor);
         void setVolume(int vol);
+
+        bool operator==(const Rivista& R) const;
 };
 
 #endif // RIVISTA_H

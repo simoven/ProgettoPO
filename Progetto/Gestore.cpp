@@ -62,26 +62,83 @@ Gestore& Gestore::operator=(const Gestore &G)
     return *this;
 }
 
-void Gestore::aggiungiArticolo(const Articolo &article)
+bool Gestore::aggiungiArticolo(const Articolo &article)
 {
+    for(Articolo* it : listArticoli)
+        if((*it) == article)
+            return false;
+
+    //Alcuni campi non possono essere vuoti
+    if(article.getTitolo() == "" || article.getNumPagine() == 0)
+        return false;
+
     listArticoli.push_back(new Articolo(article));
     listArticoli.back()->setIdentificativo(nArticoli++);
+    return true;
 }
 
-void Gestore::aggiungiAutore(const Autore &author)
+bool Gestore::aggiungiAutore(const Autore &author)
 {
+    for(Autore* it : listAutori)
+        if((*it) == author)
+            return false;
+
+    if(author.getCognome() == "" || author.getNome() == "")
+        return false;
+
     listAutori.push_back(new Autore(author));
     listAutori.back()->setIdentificativo(nAutori++);
+    return true;
 }
 
-void Gestore::aggiungiConferenza(const Conferenza &conference)
+bool Gestore::aggiungiConferenza(const Conferenza &conference)
 {
+    for(Conferenza* it : listConferenze)
+        if(*it == conference)
+            return false;
+    if(conference.getNome() == "" || conference.getLuogo() == "")
+        return false;
+
     listConferenze.push_back(new Conferenza(conference));
+    return true;
 }
 
-void Gestore::aggiungiRivista(const Rivista &paper)
+bool Gestore::aggiungiRivista(const Rivista &paper)
 {
+    for(Rivista* it : listRiviste)
+        if(*it == paper)
+            return false;
+
+    if(paper.getNome() == "")
+        return false;
+
     listRiviste.push_back(new Rivista(paper));
+    return true;
+}
+
+void Gestore::rimuoviArticolo(int idx)
+{
+    delete listArticoli.at(idx);
+    listArticoli.erase(listArticoli.begin() + idx);
+    qDebug() << "Elimino";
+}
+
+void Gestore::rimuoviAutore(int idx)
+{
+    delete listAutori.at(idx);
+    listAutori.erase(listAutori.begin() + idx);
+}
+
+void Gestore::rimuoviConferenza(int idx)
+{
+    delete listConferenze.at(idx);
+    listConferenze.erase(listConferenze.begin() + idx);
+}
+
+void Gestore::rimuoviRivista(int idx)
+{
+    delete listRiviste.at(idx);
+    listRiviste.erase(listRiviste.begin() + idx);
 }
 
 
