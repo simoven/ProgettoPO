@@ -46,7 +46,7 @@ itemDialog::itemDialog(int idx, classType tp, Gestore* ptr2, QListWidgetItem* it
 void itemDialog::hide()
 {
     ui->itmLineEdit1->setVisible(false);
-    ui->itmLineEdit2->setVisible(false);s
+    ui->itmLineEdit2->setVisible(false);
     ui->itmLineEdit3->setVisible(false);
     ui->itmPlainText->setVisible(false);
     ui->itmSpinBox->setVisible(false);
