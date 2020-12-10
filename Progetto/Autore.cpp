@@ -8,6 +8,8 @@ QString Autore::getNome() const { return nome; }
 
 QString Autore::getCognome() const { return cognome; }
 
+bool Autore::getIsCorrelato() const { return isCorrelato; }
+
 const QList <QString>& Autore::getAfferenze() const { return afferenze; }
 
 void Autore::setNome(QString name) { nome = name; }
@@ -16,7 +18,28 @@ void Autore::setIdentificativo(int number) { identificativo = QString::number(nu
 
 void Autore::setCognome(QString surname) { cognome = surname; }
 
-void Autore::addAfferenze(QString workplace) { afferenze.push_back(workplace); }
+void Autore::setIsCorrelato(bool x) { isCorrelato = x; }
+
+void Autore::addAfferenze(QString workplace)
+{
+    if(workplace.back() != '\n')
+        workplace += '\n';
+
+    int len = 0;
+    int idx = 0;
+    //Tokenizzo il plain text
+    for(int i = 0; i < workplace.length(); i++)
+    {
+        if(workplace [i] == '\n')
+        {
+            afferenze.push_back(workplace.mid(idx, len));
+            idx = i+1;
+            len = 0;
+        }
+        else
+            len++;
+    }
+}
 
 bool Autore::operator==(const Autore &A) const
 {

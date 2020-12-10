@@ -6,6 +6,7 @@
 #include "Conferenza.h"
 #include "Rivista.h"
 #include <QDebug>
+#include <QMessageBox>
 
 class Gestore
 {
@@ -27,20 +28,20 @@ class Gestore
         Gestore(const Gestore& G);
         Gestore& operator=(const Gestore& G);
 
-        bool aggiungiArticolo(const Articolo& article);
-        bool aggiungiAutore(const Autore& author);
+        bool aggiungiArticolo(const Articolo& article, bool increase = true);
+        bool aggiungiAutore(const Autore& author, bool increase = true);
         bool aggiungiConferenza(const Conferenza& conference);
         bool aggiungiRivista(const Rivista& paper);
 
-        void rimuoviArticolo(int idx);
-        void rimuoviAutore(int idx);
+        bool rimuoviArticolo(int idx);
+        bool rimuoviAutore(int idx);
         void rimuoviConferenza(int idx);
         void rimuoviRivista(int idx);
 
-        const QList <Articolo*> getArticoli() const;
-        const QList <Autore*> getAutori() const;
-        const QList <Conferenza*> getConferenze() const;
-        const QList <Rivista*> getRiviste() const;
+        const QList <Articolo*>& getArticoli() const;
+        const QList <Autore*>& getAutori() const;
+        const QList <Conferenza*>& getConferenze() const;
+        const QList <Rivista*>& getRiviste() const;
 };
 
 #endif // GESTORE_H

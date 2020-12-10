@@ -62,7 +62,7 @@ Gestore& Gestore::operator=(const Gestore &G)
     return *this;
 }
 
-bool Gestore::aggiungiArticolo(const Articolo &article)
+bool Gestore::aggiungiArticolo(const Articolo &article, bool increase)
 {
     for(Articolo* it : listArticoli)
         if((*it) == article)
@@ -73,11 +73,14 @@ bool Gestore::aggiungiArticolo(const Articolo &article)
         return false;
 
     listArticoli.push_back(new Articolo(article));
-    listArticoli.back()->setIdentificativo(++nArticoli);
+
+    if(increase)
+        listArticoli.back()->setIdentificativo(++nArticoli);
+
     return true;
 }
 
-bool Gestore::aggiungiAutore(const Autore &author)
+bool Gestore::aggiungiAutore(const Autore &author, bool increase)
 {
     for(Autore* it : listAutori)
         if((*it) == author)
@@ -87,7 +90,10 @@ bool Gestore::aggiungiAutore(const Autore &author)
         return false;
 
     listAutori.push_back(new Autore(author));
-    listAutori.back()->setIdentificativo(++nAutori);
+
+    if(increase)
+        listAutori.back()->setIdentificativo(++nAutori);
+
     return true;
 }
 
@@ -116,17 +122,37 @@ bool Gestore::aggiungiRivista(const Rivista &paper)
     return true;
 }
 
-void Gestore::rimuoviArticolo(int idx)
+void showMsgErrore()
 {
-    delete listArticoli.at(idx);
-    listArticoli.erase(listArticoli.begin() + idx);
-    qDebug() << "Elimino";
+    QMessageBox msg(QMessageBox::Warning, "Impossibile eliminare", "L'elemento è correlato ad un altro elemento");
+    msg.exec();
 }
 
-void Gestore::rimuoviAutore(int idx)
+bool Gestore::rimuoviArticolo(int idx)
 {
-    delete listAutori.at(idx);
-    listAutori.erase(listAutori.begin() + idx);
+    if(!listArticoli.at(idx)->getIsCorrelato())
+    {
+        delete listArticoli.at(idx);
+        listArticoli.erase(listArticoli.begin() + idx);
+        return true;
+    }
+
+    showMsgErrore();
+    return false;
+}
+
+bool Gestore::rimuoviAutore(int idx)
+{
+    //Controllo che questo autore non sia nella lista correlati di qualcuno
+    if(!listAutori.at(idx)->getIsCorrelato())
+    {
+        delete listAutori.at(idx);
+        listAutori.erase(listAutori.begin() + idx);
+        return true;
+    }
+
+    showMsgErrore();
+    return false;
 }
 
 void Gestore::rimuoviConferenza(int idx)
@@ -141,22 +167,22 @@ void Gestore::rimuoviRivista(int idx)
     listRiviste.erase(listRiviste.begin() + idx);
 }
 
-const QList <Articolo*> Gestore::getArticoli() const
+const QList <Articolo*>& Gestore::getArticoli() const
 {
     return listArticoli;
 }
 
-const QList <Autore*> Gestore::getAutori() const
+const QList <Autore*>& Gestore::getAutori() const
 {
     return listAutori;
 }
 
-const QList <Conferenza*> Gestore::getConferenze() const
+const QList <Conferenza*>& Gestore::getConferenze() const
 {
     return listConferenze;
 }
 
-const QList <Rivista*> Gestore::getRiviste() const
+const QList <Rivista*>& Gestore::getRiviste() const
 {
     return listRiviste;
 }

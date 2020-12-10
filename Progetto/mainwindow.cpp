@@ -51,7 +51,6 @@ MainWindow::~MainWindow()
         delete ui->widgetConferenza->item(i);
 
     delete ui;
-
 }
 
 void MainWindow::svuotaLineEdit()
@@ -108,10 +107,11 @@ void MainWindow::on_ArticoloButton_clicked()
     ui->labelStacked->setText("Articoli : ");
     ui->label1->setText("Titolo"); ui->lineEdit1->setVisible(true);
     ui->label2->setText("Keyword"); ui->lineEdit2->setVisible(true);
+    ui->label3->setText("Nome editore"); ui->lineEdit3->setVisible(true);
     ui->lineEdit2->setPlaceholderText("Scrivi le keyword separate da virgole, senza spazi");
 
-    ui->label4->setText("Autori"); ui->plainText->setVisible(true);
-    ui->plainText->setPlaceholderText("Scrivi un autore per riga");
+    //ui->label4->setText("Autori"); ui->plainText->setVisible(true);
+    //ui->plainText->setPlaceholderText("Scrivi un autore per riga");
     ui->label5->setText("Pagine"); ui->spinBox->setVisible(true);
     ui->label6->setText("Prezzo"); ui->doubleSpinBox->setVisible(true);
 }
@@ -166,22 +166,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
         author.setNome(ui->lineEdit1->text());
         author.setCognome(ui->lineEdit2->text());
         QString text = ui->plainText->toPlainText();
-        //Aggiungo \n altrimenti la tokenizzazione non prende l'ultima stringa
-        text += '\n';
-        int len = 0;
-        int idx = 0;
-        //Tokenizzo il plain text
-        for(int i = 0; i < text.length(); i++)
-        {
-            if(text [i] == '\n')
-            {
-                author.addAfferenze(text.mid(idx, len));
-                idx = i+1;
-                len = 0;
-            }
-            else
-                len++;
-        }
+        author.addAfferenze(text);
 
         if(gestore.aggiungiAutore(author))
         {
@@ -200,42 +185,10 @@ void MainWindow::on_bottoneAggiungi_clicked()
         Articolo article;
         article.setTitolo(ui->lineEdit1->text());
         QString keyword = ui->lineEdit2->text();
-        keyword += ',';
-        QString autori = ui->plainText->toPlainText();
-        autori += '\n';
-
-        //Tokenizzo le keyword
-        int len = 0;
-        int idx = 0;
-        for(int i = 0; i < keyword.length(); i++)
-        {
-            if(keyword [i] == ',')
-            {
-                article.addKeyword(keyword.mid(idx, len));
-                idx = i+1;
-                len = 0;
-            }
-            else
-                len++;
-        }
-
-        //Tokenizzo il plain text
-        len = 0;
-        idx = 0;
-        for(int i = 0; i < autori.length(); i++)
-        {
-            if(autori [i] == '\n')
-            {
-                article.addAutore(autori.mid(idx, len));
-                idx = i+1;
-                len = 0;
-            }
-            else
-                len++;
-        }
-
+        article.addKeyword(keyword);
         article.setNumPagine(ui->spinBox->value());
         article.setPrezzo(ui->doubleSpinBox->value());
+        article.setNomePubblicato(ui->lineEdit3->text());
         if(gestore.aggiungiArticolo(article))
         {
             item->setText(article.getTitolo());
@@ -256,22 +209,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
         conference.setLuogo(ui->lineEdit3->text());
         conference.setPartecipanti(ui->spinBox->value());
         QString organizzatori = ui->plainText->toPlainText();
-        organizzatori += '\n';
-
-        //Tokenizzo gli organizzatori
-        int len = 0;
-        int idx = 0;
-        for(int i = 0; i < organizzatori.length(); i++)
-        {
-            if(organizzatori [i] == '\n')
-            {
-                conference.addOrganizzatore(organizzatori.mid(idx, len));
-                idx = i+1;
-                len = 0;
-            }
-            else
-                len++;
-        }
+        conference.addOrganizzatore(organizzatori);
 
         if(gestore.aggiungiConferenza(conference))
         {
@@ -361,24 +299,35 @@ void MainWindow::on_bottoneRimuovi_clicked()
 void MainWindow::onRimuoviItem(QListWidget* itm)
 {
     //Itm è un puntatore alla lista attiva
+    bool deleted = false;
     for(int i = 0; i < itm->count(); i++)
     {
+        deleted = false;
         if(itm->item(i)->checkState() == Qt::Checked)
         {
-            if(itm->objectName() == "widgetAutore")
-                gestore.rimuoviAutore(i);
+            if(itm->objectName() == "widgetAutore" && gestore.rimuoviAutore(i))
+                deleted = true;
 
-            else if(itm->objectName() == "widgetArticolo")
-                gestore.rimuoviArticolo(i);
+            else if(itm->objectName() == "widgetArticolo" && gestore.rimuoviArticolo(i))
+                deleted = true;
 
             else if(itm->objectName() == "widgetConferenza")
+            {
                 gestore.rimuoviConferenza(i);
+                deleted = true;
+            }
 
-            else
+            else if(itm->objectName() == "widgetRivista")
+            {
                 gestore.rimuoviRivista(i);
+                deleted = true;
+            }
 
-            delete itm->item(i);
-            itm->takeItem(i);
+            if(deleted)
+            {
+                delete itm->item(i);
+                itm->takeItem(i);
+            }
         }
     }
 

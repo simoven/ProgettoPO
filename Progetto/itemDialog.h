@@ -47,6 +47,7 @@ private:
         void showConferenza();
         void showRivista();
         void hide();
+        void riempiLista(int option);
 };
 
 #endif // ITEMDIALOG_H

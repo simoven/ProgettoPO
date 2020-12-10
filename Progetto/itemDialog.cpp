@@ -75,6 +75,8 @@ void itemDialog::hide()
     ui->itmCombo4->setVisible(false);
     ui->itmComboBox->setVisible(false);
     ui->calendarWidget->setVisible(false);
+    ui->listWidget->clear();
+    ui->itmPlainText->setPlainText("");
 }
 
 void itemDialog::showAutore()
@@ -85,12 +87,46 @@ void itemDialog::showAutore()
     ui->itmLineEdit3->setVisible(true);
 
     ui->itmCombo4->setVisible(true); ui->itmCombo4->addItem("Afferenze");
+    ui->stackedWidget->setCurrentWidget(ui->pageText);
     ui->itmPlainText->setVisible(true);
     for(int i = 0; i < author->getAfferenze().size(); i++)
         ui->itmPlainText->appendPlainText(author->getAfferenze()[i]);
 }
 
 
+void itemDialog::riempiLista(int option)
+{
+    ui->listWidget->clear();
+    ui->itmPlainText->setPlainText("");
+    Articolo* ptrArt = ptrGestore->getArticoli() [index];
+    if(option == 0) //Autori
+    {
+        QList <Autore*> listAutori = ptrArt->getAutori();
+        QList <Autore*> tuttiAutori = ptrGestore->getAutori();
+        for(int i = 0; i < tuttiAutori.size(); i++)
+        {
+            ui->listWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
+            if(listAutori.contains(tuttiAutori [i]))
+                ui->listWidget->item(i)->setCheckState(Qt::Checked);
+            else
+                ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+        }
+    }
+    else //Articoli correlati
+    {
+        QList <Articolo*> listArticoli = ptrArt->getCorrelati();
+        QList <Articolo*> tuttiArticoli = ptrGestore->getArticoli();
+        for(int i = 0; i < tuttiArticoli.size(); i++)
+        {
+            ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
+            if(listArticoli.contains(tuttiArticoli [i]))
+                ui->listWidget->item(i)->setCheckState(Qt::Checked);
+            else
+                ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+        }
+
+    }
+}
 
 void itemDialog::showArticolo()
 {
@@ -103,6 +139,7 @@ void itemDialog::showArticolo()
     ui->itmLabel5->setText("Pagine"); ui->itmSpinBox->setValue(article->getNumPagine()); ui->itmSpinBox->setVisible(true);
     ui->itmLabel6->setText("Prezzo"); ui->itmDoubleSpin->setValue(article->getPrezzo()); ui->itmDoubleSpin->setVisible(true);
 
+    //Mostro le keyword nel line edit
     QString text = "";
     for(int i = 0; i < article->getKeyword().size(); i++)
     {
@@ -110,15 +147,15 @@ void itemDialog::showArticolo()
         if(i != article->getKeyword().size() - 1)
             text += ",";
     }
+
     ui->itmLineEdit3->setText(text);
 
     ui->itmCombo4->addItem("Autori");
     ui->itmCombo4->addItem("Correlati");
     ui->itmCombo4->setCurrentIndex(0);
     ui->itmCombo4->setVisible(true);
-    ui->itmPlainText->setVisible(true);
-    for(int i = 0; i < article->getAutori().size(); i++)
-        ui->itmPlainText->appendPlainText(article->getAutori()[i]);
+    ui->stackedWidget->setCurrentWidget(ui->pageList);
+    riempiLista(ui->itmCombo4->currentIndex());
 
     ui->itmLabel7->setText("Pubblicato per");
     ui->itmComboBox->addItem("Conferenza");
@@ -130,20 +167,7 @@ void itemDialog::showArticolo()
 void itemDialog::on_itmCombo4_currentIndexChanged(int index)
 {
     if(type == cArticolo)
-    {
-        if(index == 0)
-        {
-            ui->itmPlainText->setPlainText("");
-            for(int i = 0; i < article->getAutori().size(); i++)
-                ui->itmPlainText->appendPlainText(article->getAutori()[i]);
-        }
-        else if(index == 1)
-        {
-            ui->itmPlainText->setPlainText("");
-            for(int i = 0; i < article->getCorrelati().size(); i++)
-                ui->itmPlainText->appendPlainText(article->getCorrelati()[i]);
-        }
-     }
+        riempiLista(index);
 }
 
 
@@ -155,27 +179,62 @@ void itemDialog::on_bottoneModifica_clicked()
         Autore temp;
         temp.setNome(ui->itmLineEdit1->text());
         temp.setCognome(ui->itmLineEdit2->text());
-        QString text = ui->itmPlainText->toPlainText();
-        text += '\n';
-        int len = 0;
-        int idx = 0;
-        //Tokenizzo il plain text
-        for(int i = 0; i < text.length(); i++)
-        {
-            if(text [i] == '\n')
-            {
-                temp.addAfferenze(text.mid(idx, len));
-                idx = i+1;
-                len = 0;
-            }
-            else
-                len++;
-        }
+        temp.addAfferenze(ui->itmPlainText->toPlainText());
+        QString x = ui->itmLineEdit3->text();
+        temp.setIdentificativo(x.toInt());
 
-        if(ptrGestore->aggiungiAutore(temp))
+
+        if(ptrGestore->aggiungiAutore(temp, false))
         {
             ptrGestore->rimuoviAutore(index);
             listItem->setText(temp.getNome() + " " + temp.getCognome());
+        }
+        else
+            errorMsg();
+    }
+    else if(type == cArticolo)
+    {
+        Articolo article;
+        article.setTitolo(ui->itmLabel1->text());
+        article.addKeyword(ui->itmLineEdit3->text());
+        article.setNomePubblicato(ui->itmLineEdit4->text());
+        article.setNumPagine(ui->itmSpinBox->value());
+        article.setPrezzo(ui->itmDoubleSpin->value());
+        article.setTipo(static_cast<Tipo> (ui->itmComboBox->currentIndex()));
+        QString x = ui->itmLineEdit2->text();
+        article.setIdentificativo(x.toInt());
+
+        if(ui->itmCombo4->currentIndex() == 0) // mostro autori
+        {
+            for(int i = 0; i < ui->listWidget->count(); i++)
+            {
+                if(ui->listWidget->item(i)->checkState() == Qt::Checked)
+                {
+                    article.addAutore(ptrGestore->getAutori() [i]);
+                    ptrGestore->getAutori() [i]->setIsCorrelato(true);
+                }
+                else
+                    ptrGestore->getAutori() [i]->setIsCorrelato(false);
+            }
+        }
+        else //Mostro articoli
+        {
+            for(int i = 0; i < ui->listWidget->count(); i++)
+            {
+                if(ui->listWidget->item(i)->checkState() == Qt::Checked)
+                {
+                    article.addCorrelato(ptrGestore->getArticoli() [i]);
+                    ptrGestore->getArticoli() [i]->setIsCorrelato(true);
+                }
+                else
+                    ptrGestore->getArticoli() [i]->setIsCorrelato(false);
+            }
+        }
+
+        if(ptrGestore->aggiungiArticolo(article, false))
+        {
+            ptrGestore->rimuoviArticolo(index);
+            listItem->setText(article.getTitolo());
         }
         else
             errorMsg();
