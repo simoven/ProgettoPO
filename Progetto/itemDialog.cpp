@@ -33,14 +33,14 @@ itemDialog::itemDialog(int idx, classType tp, Gestore* ptr2, QListWidgetItem* it
             conference = ptrGestore->getConferenze() [idx];
             ui->picLabel->setPixmap(QPixmap(":/res/ConferenzaColor.png").scaled(width, height, Qt::KeepAspectRatio));
             ui->tipoLabel->setText("   Conferenza");
-            //showConferenza();
+            showConferenza();
             break;
 
         case cRivista:
             paper = ptrGestore->getRiviste() [idx];
             ui->picLabel->setPixmap(QPixmap(":/res/RivistaColor.png").scaled(width, height, Qt::KeepAspectRatio));
             ui->tipoLabel->setText("   Rivista");
-            //showRivista();
+            showRivista();
             break;
     }
 
@@ -168,6 +168,34 @@ void itemDialog::showArticolo()
     ui->itmComboBox->setCurrentIndex(article->getPubblicato());
 }
 
+void itemDialog::showConferenza()
+{
+    ui->itmLabel1->setText("Nome"); ui->itmLineEdit1->setVisible(true); ui->itmLineEdit1->setText(conference->getNome());
+    ui->itmLabel2->setText("Acronimo"); ui->itmLineEdit2->setVisible(true); ui->itmLineEdit2->setText(conference->getAcronimo());
+    ui->itmLabel3->setText("Luogo"); ui->itmLineEdit3->setVisible(true); ui->itmLineEdit3->setText(conference->getLuogo());
+    ui->itmCombo4->addItem("Organizzatori"); ui->itmCombo4->setVisible(true);
+    ui->itmCombo4->setCurrentIndex(0);
+
+    for(int i = 0; i < conference->getOrganizzatori().size(); i++)
+        ui->itmPlainText->appendPlainText(conference->getOrganizzatori() [i]);
+
+    ui->stackedWidget->setCurrentWidget(ui->pageText);
+    ui->itmPlainText->setVisible(true);
+    ui->itmLabel5->setText("Partecipanti"); ui->itmSpinBox->setVisible(true); ui->itmSpinBox->setValue(conference->getPartecipanti());
+    ui->calendarWidget->setVisible(true); ui->calendarWidget->setSelectedDate(conference->getData());
+}
+
+void itemDialog::showRivista()
+{
+    ui->itmLabel1->setText("Nome"); ui->itmLineEdit1->setVisible(true); ui->itmLineEdit1->setText(paper->getNome());
+    ui->itmLabel2->setText("Acronimo"); ui->itmLineEdit2->setVisible(true); ui->itmLineEdit2->setText(paper->getAcronimo());
+    ui->itmLabel3->setText("Editore"); ui->itmLineEdit3->setVisible(true); ui->itmLineEdit3->setText(paper->getEditore());
+    ui->itmLabel5->setText("Volume"); ui->itmSpinBox->setVisible(true); ui->itmSpinBox->setValue(paper->getVolume());
+    ui->calendarWidget->setVisible(true); ui->calendarWidget->setSelectedDate(paper->getData());
+    ui->listWidget->setVisible(false);
+}
+
+
 void itemDialog::on_itmCombo4_currentIndexChanged(int index)
 {
     if(type == cArticolo)
@@ -242,6 +270,42 @@ void itemDialog::on_bottoneModifica_clicked()
         }
         else
             errorMsg();
+    }
+    else if(type == cConferenza)
+    {
+        Conferenza tmp;
+        tmp.setNome(ui->itmLineEdit1->text());
+        tmp.setAcronimo(ui->itmLineEdit2->text());
+        tmp.setLuogo(ui->itmLineEdit3->text());
+        tmp.setPartecipanti(ui->itmSpinBox->value());
+        tmp.setData(ui->calendarWidget->selectedDate());
+        tmp.addOrganizzatore(ui->itmPlainText->toPlainText());
+
+        if(ptrGestore->aggiungiConferenza(tmp))
+        {
+            ptrGestore->rimuoviConferenza(index);
+            listItem->setText(tmp.getNome());
+        }
+        else
+            errorMsg();
+    }
+    else
+    {
+        Rivista temp;
+        temp.setNome(ui->itmLineEdit1->text());
+        temp.setAcronimo(ui->itmLineEdit2->text());
+        temp.setEditore(ui->itmLineEdit3->text());
+        temp.setVolume(ui->itmSpinBox->value());
+        temp.setData(ui->calendarWidget->selectedDate());
+
+        if(ptrGestore->aggiungiRivista(temp))
+        {
+            ptrGestore->rimuoviRivista(index);
+            listItem->setText(paper->getNome());
+        }
+        else
+            errorMsg();
+
     }
 }
 
