@@ -1,6 +1,6 @@
 #include "Autore.h"
 
-Autore::Autore() : identificativo(""), nome(""), cognome("") {}
+Autore::Autore() : identificativo(""), nome(""), cognome(""), isCorrelato(false) {}
 
 QString Autore::getIdentificativo() const { return identificativo; }
 

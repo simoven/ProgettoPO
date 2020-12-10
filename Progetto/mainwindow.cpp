@@ -325,10 +325,12 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
 
             if(deleted)
             {
-                delete itm->item(i);
-                itm->takeItem(i);
+                delete itm->takeItem(i);
+                i--;
             }
+
         }
+
     }
 
     ui->bottoneRimuovi->setVisible(false);

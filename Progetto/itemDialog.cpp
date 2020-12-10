@@ -227,7 +227,7 @@ void itemDialog::on_bottoneModifica_clicked()
     else if(type == cArticolo)
     {
         Articolo article;
-        article.setTitolo(ui->itmLabel1->text());
+        article.setTitolo(ui->itmLineEdit1->text());
         article.addKeyword(ui->itmLineEdit3->text());
         article.setNomePubblicato(ui->itmLineEdit4->text());
         article.setNumPagine(ui->itmSpinBox->value());
