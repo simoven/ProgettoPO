@@ -36,22 +36,25 @@ void Articolo::addAutore(Autore* author) { listAutori.push_back(author); }
 
 void Articolo::addKeyword(QString keyword)
 {
-    //Tokenizzo le keyword
-    if(keyword.back() != ',')
-        keyword += ',';
-
-    int len = 0;
-    int idx = 0;
-    for(int i = 0; i < keyword.length(); i++)
+    if(keyword.size() != 0)
     {
-        if(keyword [i] == ',')
+        //Tokenizzo le keyword
+        if(keyword.back() != ',')
+            keyword += ',';
+
+        int len = 0;
+        int idx = 0;
+        for(int i = 0; i < keyword.length(); i++)
         {
-            listKeyword.push_back(keyword.mid(idx, len));
-            idx = i+1;
-            len = 0;
+            if(keyword [i] == ',')
+            {
+                listKeyword.push_back(keyword.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
         }
-        else
-            len++;
     }
 }
 

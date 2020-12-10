@@ -22,22 +22,25 @@ void Autore::setIsCorrelato(bool x) { isCorrelato = x; }
 
 void Autore::addAfferenze(QString workplace)
 {
-    if(workplace.back() != '\n')
-        workplace += '\n';
-
-    int len = 0;
-    int idx = 0;
-    //Tokenizzo il plain text
-    for(int i = 0; i < workplace.length(); i++)
+    if(workplace.size() != 0)
     {
-        if(workplace [i] == '\n')
+        if(workplace.back() != '\n')
+            workplace += '\n';
+
+        int len = 0;
+        int idx = 0;
+        //Tokenizzo il plain text
+        for(int i = 0; i < workplace.length(); i++)
         {
-            afferenze.push_back(workplace.mid(idx, len));
-            idx = i+1;
-            len = 0;
+            if(workplace [i] == '\n')
+            {
+                afferenze.push_back(workplace.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
         }
-        else
-            len++;
     }
 }
 

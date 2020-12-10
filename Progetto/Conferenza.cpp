@@ -12,22 +12,25 @@ void Conferenza::setLuogo(QString place) { luogo = place; }
 
 void Conferenza::addOrganizzatore(QString organizzatori)
 {
-    if(organizzatori.back() != '\n')
-    organizzatori += '\n';
-
-    //Tokenizzo gli organizzatori
-    int len = 0;
-    int idx = 0;
-    for(int i = 0; i < organizzatori.length(); i++)
+    if(organizzatori.size() != 0)
     {
-        if(organizzatori [i] == '\n')
+        if(organizzatori.back() != '\n')
+        organizzatori += '\n';
+
+        //Tokenizzo gli organizzatori
+        int len = 0;
+        int idx = 0;
+        for(int i = 0; i < organizzatori.length(); i++)
         {
-            listOrganizzatori.push_back(organizzatori.mid(idx, len));
-            idx = i+1;
-            len = 0;
+            if(organizzatori [i] == '\n')
+            {
+                listOrganizzatori.push_back(organizzatori.mid(idx, len));
+                idx = i+1;
+                len = 0;
+            }
+            else
+                len++;
         }
-        else
-            len++;
     }
 }
 

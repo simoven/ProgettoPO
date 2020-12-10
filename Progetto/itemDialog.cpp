@@ -118,11 +118,15 @@ void itemDialog::riempiLista(int option)
         QList <Articolo*> tuttiArticoli = ptrGestore->getArticoli();
         for(int i = 0; i < tuttiArticoli.size(); i++)
         {
-            ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
-            if(listArticoli.contains(tuttiArticoli [i]))
-                ui->listWidget->item(i)->setCheckState(Qt::Checked);
-            else
-                ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+            //Controllo prima di non aggiungere l'articolo a se stesso
+            if(article != tuttiArticoli [i])
+            {
+                ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
+                if(listArticoli.contains(tuttiArticoli [i]))
+                    ui->listWidget->item(i)->setCheckState(Qt::Checked);
+                else
+                    ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+            }
         }
 
     }
