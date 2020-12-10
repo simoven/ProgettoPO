@@ -63,7 +63,6 @@ void errorMsg()
     msg.exec();
 }
 
-
 void itemDialog::hide()
 {
     ui->itmLineEdit1->setVisible(false);
@@ -85,7 +84,7 @@ void itemDialog::showAutore()
     ui->itmLabel3->setText("Identificativo"); ui->itmLineEdit3->setText(author->getIdentificativo()); ui->itmLineEdit3->setReadOnly(true);
     ui->itmLineEdit3->setVisible(true);
 
-    ui->itmCombo4->addItem("Afferenze "); ui->itmCombo4->setVisible(true);
+    ui->itmCombo4->setVisible(true); ui->itmCombo4->addItem("Afferenze");
     ui->itmPlainText->setVisible(true);
     for(int i = 0; i < author->getAfferenze().size(); i++)
         ui->itmPlainText->appendPlainText(author->getAfferenze()[i]);
@@ -130,18 +129,21 @@ void itemDialog::showArticolo()
 
 void itemDialog::on_itmCombo4_currentIndexChanged(int index)
 {
-    if(index == 0)
+    if(type == cArticolo)
     {
-        ui->itmPlainText->setPlainText("");
-        for(int i = 0; i < article->getAutori().size(); i++)
-            ui->itmPlainText->appendPlainText(article->getAutori()[i]);
-    }
-    else if(index == 1)
-    {
-        ui->itmPlainText->setPlainText("");
-        for(int i = 0; i < article->getCorrelati().size(); i++)
-            ui->itmPlainText->appendPlainText(article->getCorrelati()[i]);
-    }
+        if(index == 0)
+        {
+            ui->itmPlainText->setPlainText("");
+            for(int i = 0; i < article->getAutori().size(); i++)
+                ui->itmPlainText->appendPlainText(article->getAutori()[i]);
+        }
+        else if(index == 1)
+        {
+            ui->itmPlainText->setPlainText("");
+            for(int i = 0; i < article->getCorrelati().size(); i++)
+                ui->itmPlainText->appendPlainText(article->getCorrelati()[i]);
+        }
+     }
 }
 
 
