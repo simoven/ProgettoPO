@@ -49,12 +49,8 @@ bool Autore::operator==(const Autore &A) const
     if(nome != A.nome || cognome != A.cognome)
         return false;
 
-    if(afferenze.size() != A.afferenze.size())
+    if(afferenze != A.afferenze)
         return false;
-
-    for(int i = 0; i < afferenze.size(); i++)
-        if(afferenze [i] != A.afferenze [i])
-            return false;
 
     return true;
 }

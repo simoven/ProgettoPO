@@ -107,11 +107,7 @@ void MainWindow::on_ArticoloButton_clicked()
     ui->labelStacked->setText("Articoli : ");
     ui->label1->setText("Titolo"); ui->lineEdit1->setVisible(true);
     ui->label2->setText("Keyword"); ui->lineEdit2->setVisible(true);
-    ui->label3->setText("Nome editore"); ui->lineEdit3->setVisible(true);
     ui->lineEdit2->setPlaceholderText("Scrivi le keyword separate da virgole, senza spazi");
-
-    //ui->label4->setText("Autori"); ui->plainText->setVisible(true);
-    //ui->plainText->setPlaceholderText("Scrivi un autore per riga");
     ui->label5->setText("Pagine"); ui->spinBox->setVisible(true);
     ui->label6->setText("Prezzo"); ui->doubleSpinBox->setVisible(true);
 }
@@ -188,7 +184,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
         article.addKeyword(keyword);
         article.setNumPagine(ui->spinBox->value());
         article.setPrezzo(ui->doubleSpinBox->value());
-        article.setNomePubblicato(ui->lineEdit3->text());
         if(gestore.aggiungiArticolo(article))
         {
             item->setText(article.getTitolo());
@@ -311,17 +306,11 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
             else if(itm->objectName() == "widgetArticolo" && gestore.rimuoviArticolo(i))
                 deleted = true;
 
-            else if(itm->objectName() == "widgetConferenza")
-            {
-                gestore.rimuoviConferenza(i);
+            else if(itm->objectName() == "widgetConferenza" && gestore.rimuoviConferenza(i))
                 deleted = true;
-            }
 
-            else if(itm->objectName() == "widgetRivista")
-            {
-                gestore.rimuoviRivista(i);
+            else if(itm->objectName() == "widgetRivista" && gestore.rimuoviRivista(i))
                 deleted = true;
-            }
 
             if(deleted)
             {

@@ -35,8 +35,8 @@ class Gestore
 
         bool rimuoviArticolo(int idx);
         bool rimuoviAutore(int idx);
-        void rimuoviConferenza(int idx);
-        void rimuoviRivista(int idx);
+        bool rimuoviConferenza(int idx);
+        bool rimuoviRivista(int idx);
 
         const QList <Articolo*>& getArticoli() const;
         const QList <Autore*>& getAutori() const;

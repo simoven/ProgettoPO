@@ -2,6 +2,7 @@
 #define ARTICOLO_H
 
 #include "Autore.h"
+#include "Base.h"
 
 enum Tipo {CONFERENZA = 0, RIVISTA};
 
@@ -14,8 +15,7 @@ class Articolo
         QList <Autore*> listAutori;
         QList <QString> listKeyword;
         QList <Articolo*> listCorrelati;
-        Tipo pubblicatoPer;
-        QString nomePubblicato;
+        Base* editorePubblicato;
         bool isCorrelato;
 
     public :
@@ -27,8 +27,7 @@ class Articolo
         const QList <Autore*>& getAutori() const;
         const QList <QString>& getKeyword() const;
         const QList <Articolo*>& getCorrelati() const;
-        Tipo getPubblicato() const;
-        QString getNomePubblicato() const;
+        Base* getEditorePubblicato() const;
         bool getIsCorrelato() const;
 
         void setIdentificativo(int number);
@@ -38,8 +37,7 @@ class Articolo
         void addAutore(Autore* author);
         void addKeyword(QString keyword);
         void addCorrelato(Articolo* corr);
-        void setTipo(Tipo pubblicato);
-        void setNomePubblicato(QString name);
+        void setEditorePubblicato(Base* ptr);
         void setIsCorrelato(bool x);
 
         bool operator==(const Articolo& A) const;

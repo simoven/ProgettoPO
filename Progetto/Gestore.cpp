@@ -155,16 +155,30 @@ bool Gestore::rimuoviAutore(int idx)
     return false;
 }
 
-void Gestore::rimuoviConferenza(int idx)
+bool Gestore::rimuoviConferenza(int idx)
 {
-    delete listConferenze.at(idx);
-    listConferenze.erase(listConferenze.begin() + idx);
+    if(!listConferenze.at(idx)->getIsCorrelato())
+    {
+        delete listConferenze.at(idx);
+        listConferenze.erase(listConferenze.begin() + idx);
+        return true;
+    }
+
+    showMsgErrore();
+    return false;
 }
 
-void Gestore::rimuoviRivista(int idx)
+bool Gestore::rimuoviRivista(int idx)
 {
-    delete listRiviste.at(idx);
-    listRiviste.erase(listRiviste.begin() + idx);
+    if(!listRiviste.at(idx)->getIsCorrelato())
+    {
+        delete listRiviste.at(idx);
+        listRiviste.erase(listRiviste.begin() + idx);
+        return true;
+    }
+
+    showMsgErrore();
+    return false;
 }
 
 const QList <Articolo*>& Gestore::getArticoli() const

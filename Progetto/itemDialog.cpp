@@ -99,7 +99,7 @@ void itemDialog::riempiLista(int option)
     ui->listWidget->clear();
     ui->itmPlainText->setPlainText("");
     Articolo* ptrArt = ptrGestore->getArticoli() [index];
-    if(option == 0) //Autori
+    if(option == 0) //Autori correlati
     {
         QList <Autore*> listAutori = ptrArt->getAutori();
         QList <Autore*> tuttiAutori = ptrGestore->getAutori();
@@ -139,7 +139,13 @@ void itemDialog::showArticolo()
     ui->itmLineEdit2->setVisible(true);
 
     ui->itmLabel3->setText("Keyword"); ui->itmLineEdit3->setVisible(true);
-    ui->itmLabel4->setText("Nome editore"); ui->itmLineEdit4->setText(article->getNomePubblicato()); ui->itmLineEdit4->setVisible(true);
+    ui->itmLabel4->setText("Nome editore"); ui->itmLineEdit4->setVisible(true); ui->itmLineEdit4->setReadOnly(true);
+
+    if(article->getEditorePubblicato() != nullptr)
+        ui->itmLineEdit4->setText(article->getEditorePubblicato()->getNome());
+    else
+        ui->itmLineEdit4->setText("* Nessuno *");
+
     ui->itmLabel5->setText("Pagine"); ui->itmSpinBox->setValue(article->getNumPagine()); ui->itmSpinBox->setVisible(true);
     ui->itmLabel6->setText("Prezzo"); ui->itmDoubleSpin->setValue(article->getPrezzo()); ui->itmDoubleSpin->setVisible(true);
 
@@ -162,10 +168,32 @@ void itemDialog::showArticolo()
     riempiLista(ui->itmCombo4->currentIndex());
 
     ui->itmLabel7->setText("Pubblicato per");
-    ui->itmComboBox->addItem("Conferenza");
-    ui->itmComboBox->addItem("Rivista");
     ui->itmComboBox->setVisible(true);
-    ui->itmComboBox->setCurrentIndex(article->getPubblicato());
+    ui->itmComboBox->addItem("Nessuno");
+    ui->itmComboBox->setCurrentIndex(0);
+
+
+    QList <Conferenza*> listConf = ptrGestore->getConferenze();
+    QList <Rivista*> listRivista = ptrGestore->getRiviste();
+
+    //aggiungo tutte le conferenze
+    for(int i = 0; i < listConf.size(); i++)
+    {
+        ui->itmComboBox->addItem(QIcon(":/res/ConferenzaColor.png"), listConf [i]->getNome());
+
+        if(article->getEditorePubblicato() == listConf [i])
+            ui->itmComboBox->setCurrentIndex(i+1);
+    }
+
+
+    //Aggiungo tutte le riviste
+    for(int i = 0; i < listRivista.size(); i++)
+    {
+        ui->itmComboBox->addItem(QIcon(":/res/RivistaColor.png"), listRivista [i]->getNome());
+
+        if(article->getEditorePubblicato() == listRivista [i])
+            ui->itmComboBox->setCurrentIndex(listConf.size() + i + 1);
+    }
 }
 
 void itemDialog::showConferenza()
@@ -226,17 +254,33 @@ void itemDialog::on_bottoneModifica_clicked()
     }
     else if(type == cArticolo)
     {
+        if(article->getEditorePubblicato() != nullptr)
+            article->getEditorePubblicato()->setIsCorrelato(false);
+
         Articolo article;
         article.setTitolo(ui->itmLineEdit1->text());
         article.addKeyword(ui->itmLineEdit3->text());
-        article.setNomePubblicato(ui->itmLineEdit4->text());
         article.setNumPagine(ui->itmSpinBox->value());
         article.setPrezzo(ui->itmDoubleSpin->value());
-        article.setTipo(static_cast<Tipo> (ui->itmComboBox->currentIndex()));
         QString x = ui->itmLineEdit2->text();
         article.setIdentificativo(x.toInt());
+        int indexEditor = ui->itmComboBox->currentIndex();
 
-        if(ui->itmCombo4->currentIndex() == 0) // mostro autori
+        if(indexEditor == 0)
+            article.setEditorePubblicato(nullptr);
+        else
+        {
+            //Se l'indice è maggiore della size delle conferenze vuol dire che ho selezionato una rivista
+            if(indexEditor > ptrGestore->getConferenze().size())
+                article.setEditorePubblicato(ptrGestore->getRiviste() [indexEditor - ptrGestore->getConferenze().size() - 1]);
+            else
+                article.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
+
+            article.getEditorePubblicato()->setIsCorrelato(true);
+        }
+
+
+        if(ui->itmCombo4->currentIndex() == 0) // prendo autori nella list widget e vedo a chi sono correlato
         {
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
@@ -249,7 +293,7 @@ void itemDialog::on_bottoneModifica_clicked()
                     ptrGestore->getAutori() [i]->setIsCorrelato(false);
             }
         }
-        else //Mostro articoli
+        else // prendo articoli nella list widget e vedo a chi sono correlato
         {
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
@@ -305,7 +349,6 @@ void itemDialog::on_bottoneModifica_clicked()
         }
         else
             errorMsg();
-
     }
 }
 

@@ -1,6 +1,6 @@
 #include "Conferenza.h"
 
-Conferenza::Conferenza() : Base(), luogo(""), numPartecipanti(0) {}
+Conferenza::Conferenza() : Base(), luogo(""), numPartecipanti(0){}
 
 QString Conferenza::getLuogo() const { return luogo; }
 
@@ -39,6 +39,9 @@ void Conferenza::setPartecipanti(int partecipanti) { numPartecipanti = partecipa
 bool Conferenza::operator==(const Conferenza &C) const
 {
     if(getNome() != C.getNome() || getData() != C.getData() || luogo != C.luogo)
+        return false;
+
+    if(listOrganizzatori != C.listOrganizzatori)
         return false;
 
     return true;
