@@ -63,6 +63,12 @@ void errorMsg()
     msg.exec();
 }
 
+void showErroreCorrelato()
+{
+    QMessageBox msg(QMessageBox::Warning, "Impossibile Modificare", "Non puoi modificare un elemento correlato ad un altro elemento");
+    msg.exec();
+}
+
 void itemDialog::hide()
 {
     ui->itmLineEdit1->setVisible(false);
@@ -119,9 +125,11 @@ void itemDialog::riempiLista(int option)
         for(int i = 0; i < tuttiArticoli.size(); i++)
         {
             //Controllo prima di non aggiungere l'articolo a se stesso
-            if(article != tuttiArticoli [i])
+            if(i != index)
             {
+                qDebug() << "correlati qui,    i:" << i ;
                 ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
+
                 if(listArticoli.contains(tuttiArticoli [i]))
                     ui->listWidget->item(i)->setCheckState(Qt::Checked);
                 else
@@ -167,12 +175,13 @@ void itemDialog::showArticolo()
     ui->stackedWidget->setCurrentWidget(ui->pageList);
     riempiLista(ui->itmCombo4->currentIndex());
 
+
     ui->itmLabel7->setText("Pubblicato per");
     ui->itmComboBox->setVisible(true);
     ui->itmComboBox->addItem("Nessuno");
     ui->itmComboBox->setCurrentIndex(0);
 
-
+    //Questo serve a riempire il comboBox che mostra per chi ho pubblicato l'articolo
     QList <Conferenza*> listConf = ptrGestore->getConferenze();
     QList <Rivista*> listRivista = ptrGestore->getRiviste();
 
@@ -243,40 +252,48 @@ void itemDialog::on_bottoneModifica_clicked()
         QString x = ui->itmLineEdit3->text();
         temp.setIdentificativo(x.toInt());
 
-
-        if(ptrGestore->aggiungiAutore(temp, false))
+        if(!author->getIsCorrelato())
         {
-            ptrGestore->rimuoviAutore(index);
-            listItem->setText(temp.getNome() + " " + temp.getCognome());
+            if(ptrGestore->aggiungiAutore(temp, false, index, false))
+                listItem->setText(temp.getNome() + " " + temp.getCognome());
+            else
+                errorMsg();
         }
         else
-            errorMsg();
+            showErroreCorrelato();
+
     }
     else if(type == cArticolo)
     {
-        if(article->getEditorePubblicato() != nullptr)
-            article->getEditorePubblicato()->setIsCorrelato(false);
 
-        Articolo article;
-        article.setTitolo(ui->itmLineEdit1->text());
-        article.addKeyword(ui->itmLineEdit3->text());
-        article.setNumPagine(ui->itmSpinBox->value());
-        article.setPrezzo(ui->itmDoubleSpin->value());
+        if(article->getEditorePubblicato() != nullptr)
+        {
+            Base* ptr = article->getEditorePubblicato();
+            ptr->setIsCorrelato(false);
+        }
+
+        Articolo articleTmp;
+        articleTmp.setTitolo(ui->itmLineEdit1->text());
+        articleTmp.addKeyword(ui->itmLineEdit3->text());
+        articleTmp.setNumPagine(ui->itmSpinBox->value());
+        articleTmp.setPrezzo(ui->itmDoubleSpin->value());
         QString x = ui->itmLineEdit2->text();
-        article.setIdentificativo(x.toInt());
+        articleTmp.setIdentificativo(x.toInt());
         int indexEditor = ui->itmComboBox->currentIndex();
 
         if(indexEditor == 0)
-            article.setEditorePubblicato(nullptr);
+        {
+            articleTmp.setEditorePubblicato(nullptr);
+        }
         else
         {
             //Se l'indice è maggiore della size delle conferenze vuol dire che ho selezionato una rivista
             if(indexEditor > ptrGestore->getConferenze().size())
-                article.setEditorePubblicato(ptrGestore->getRiviste() [indexEditor - ptrGestore->getConferenze().size() - 1]);
+                articleTmp.setEditorePubblicato(ptrGestore->getRiviste() [indexEditor - ptrGestore->getConferenze().size() - 1]);
             else
-                article.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
+                articleTmp.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
 
-            article.getEditorePubblicato()->setIsCorrelato(true);
+            articleTmp.getEditorePubblicato()->setIsCorrelato(true);
         }
 
 
@@ -286,7 +303,7 @@ void itemDialog::on_bottoneModifica_clicked()
             {
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
                 {
-                    article.addAutore(ptrGestore->getAutori() [i]);
+                    articleTmp.addAutore(ptrGestore->getAutori() [i]);
                     ptrGestore->getAutori() [i]->setIsCorrelato(true);
                 }
                 else
@@ -299,7 +316,7 @@ void itemDialog::on_bottoneModifica_clicked()
             {
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
                 {
-                    article.addCorrelato(ptrGestore->getArticoli() [i]);
+                    articleTmp.addCorrelato(ptrGestore->getArticoli() [i]);
                     ptrGestore->getArticoli() [i]->setIsCorrelato(true);
                 }
                 else
@@ -307,13 +324,16 @@ void itemDialog::on_bottoneModifica_clicked()
             }
         }
 
-        if(ptrGestore->aggiungiArticolo(article, false))
+
+        if(!article->getIsCorrelato())
         {
-            ptrGestore->rimuoviArticolo(index);
-            listItem->setText(article.getTitolo());
+            if(ptrGestore->aggiungiArticolo(articleTmp, false, index, false))
+                listItem->setText(articleTmp.getTitolo());
+            else
+                errorMsg();
         }
         else
-            errorMsg();
+            showErroreCorrelato();
     }
     else if(type == cConferenza)
     {
@@ -325,13 +345,16 @@ void itemDialog::on_bottoneModifica_clicked()
         tmp.setData(ui->calendarWidget->selectedDate());
         tmp.addOrganizzatore(ui->itmPlainText->toPlainText());
 
-        if(ptrGestore->aggiungiConferenza(tmp))
+        if(!conference->getIsCorrelato())
         {
-            ptrGestore->rimuoviConferenza(index);
-            listItem->setText(tmp.getNome());
+            if(ptrGestore->aggiungiConferenza(tmp, false, index))
+                listItem->setText(tmp.getNome());
+            else
+                errorMsg();
         }
         else
-            errorMsg();
+            showErroreCorrelato();
+
     }
     else
     {
@@ -342,13 +365,17 @@ void itemDialog::on_bottoneModifica_clicked()
         temp.setVolume(ui->itmSpinBox->value());
         temp.setData(ui->calendarWidget->selectedDate());
 
-        if(ptrGestore->aggiungiRivista(temp))
+        if(!temp.getIsCorrelato())
         {
-            ptrGestore->rimuoviRivista(index);
-            listItem->setText(paper->getNome());
+            if(ptrGestore->aggiungiRivista(temp, false, index))
+                listItem->setText(paper->getNome());
+            else
+                errorMsg();
         }
         else
-            errorMsg();
+            showErroreCorrelato();
     }
+
+    done(0);
 }
 

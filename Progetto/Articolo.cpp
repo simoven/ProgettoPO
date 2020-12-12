@@ -1,5 +1,5 @@
 #include "Articolo.h"
-
+#include <QDebug>
 Articolo::Articolo() : titolo(""), nPagine(0), prezzo(0), editorePubblicato(nullptr), isCorrelato(false) {}
 
 QString Articolo::getIdentificativo() const { return identificativo; }

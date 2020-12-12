@@ -328,17 +328,11 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
 
 void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
 {
+    //Prendo il puntatore alla lista su cui è stata chiamat la funzione
     QListWidget* ptrList = qobject_cast <QListWidget*> (sender());
 
     int idx = 0;
-    for(int i = 0; i < ptrList->count(); i++)
-    {
-        if(ptrList->item(i) == item)
-        {
-            idx = i;
-            break;
-        }
-    }
+    idx = ptrList->currentRow();
 
     //Capisco da quale classe è partito il segnale
     classType tipo;

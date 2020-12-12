@@ -62,7 +62,7 @@ Gestore& Gestore::operator=(const Gestore &G)
     return *this;
 }
 
-bool Gestore::aggiungiArticolo(const Articolo &article, bool increase)
+bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, int idx, bool increase)
 {
     for(Articolo* it : listArticoli)
         if((*it) == article)
@@ -72,7 +72,18 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool increase)
     if(article.getTitolo() == "" || article.getNumPagine() == 0)
         return false;
 
-    listArticoli.push_back(new Articolo(article));
+    if(isNuovaAggiunta)
+        listArticoli.push_back(new Articolo(article));
+    else
+    {
+        if(rimuoviArticolo(idx))
+        {
+            listArticoli.insert(idx, new Articolo(article));
+            return true;
+        }
+        else
+            return false;
+    }
 
     if(increase)
         listArticoli.back()->setIdentificativo(++nArticoli);
@@ -80,7 +91,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool increase)
     return true;
 }
 
-bool Gestore::aggiungiAutore(const Autore &author, bool increase)
+bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx, bool increase)
 {
     for(Autore* it : listAutori)
         if((*it) == author)
@@ -89,7 +100,18 @@ bool Gestore::aggiungiAutore(const Autore &author, bool increase)
     if(author.getCognome() == "" || author.getNome() == "")
         return false;
 
-    listAutori.push_back(new Autore(author));
+    if(isNuovaAggiunta)
+        listAutori.push_back(new Autore(author));
+    else
+    {
+        if(rimuoviAutore(idx))
+        {
+            listAutori.insert(idx, new Autore(author));
+            return true;
+        }
+        else
+            return false;
+    }
 
     if(increase)
         listAutori.back()->setIdentificativo(++nAutori);
@@ -97,19 +119,32 @@ bool Gestore::aggiungiAutore(const Autore &author, bool increase)
     return true;
 }
 
-bool Gestore::aggiungiConferenza(const Conferenza &conference)
+bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiunta, int idx)
 {
     for(Conferenza* it : listConferenze)
         if(*it == conference)
             return false;
+
     if(conference.getNome() == "" || conference.getLuogo() == "")
         return false;
 
-    listConferenze.push_back(new Conferenza(conference));
+    if(isNuovaAggiunta)
+        listConferenze.push_back(new Conferenza(conference));
+    else
+    {
+        if(rimuoviConferenza(idx))
+        {
+            listConferenze.insert(idx, new Conferenza(conference));
+            return true;
+        }
+        else
+            return false;
+    }
+
     return true;
 }
 
-bool Gestore::aggiungiRivista(const Rivista &paper)
+bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int idx)
 {
     for(Rivista* it : listRiviste)
         if(*it == paper)
@@ -118,7 +153,19 @@ bool Gestore::aggiungiRivista(const Rivista &paper)
     if(paper.getNome() == "")
         return false;
 
-    listRiviste.push_back(new Rivista(paper));
+    if(isNuovaAggiunta)
+        listRiviste.push_back(new Rivista(paper));
+    else
+    {
+        if(rimuoviRivista(idx))
+        {
+            listRiviste.insert(idx, new Rivista(paper));
+            return true;
+        }
+        else
+            return false;
+    }
+
     return true;
 }
 
