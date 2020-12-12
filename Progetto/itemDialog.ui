@@ -11,7 +11,58 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Informazioni Dettagliate</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">QWidget {
+background-color: rgb(46, 52, 54);
+color : white;
+}
+
+QComboBox {
+	background-color : rgb(136, 138, 133);
+	/*border-radius : 6px;*/
+}
+
+QPushButton {
+	border-radius : 6px;
+	color : white;
+	background-color :  rgb(85, 87, 83);
+}
+
+QSpinBox {
+	border-radius : 6px;
+	color : white;
+	background-color : rgb(136, 138, 133);
+}
+
+QDoubleSpinBox {
+	border-radius : 6px;
+	color : white;
+	background-color : rgb(136, 138, 133);
+}
+
+QListWidget {
+	border-radius : 6px;
+	background-color : rgb(136, 138, 133);
+}
+
+QPushButton:hover{
+    background-color : rgb(114, 159, 207);
+}
+
+QLineEdit {
+	border-radius : 6px;
+	color : white;
+	background-color : rgb(136, 138, 133);
+
+}
+
+QPlainTextEdit {
+	border-radius : 6px;
+	color : white;
+	background-color : rgb(136, 138, 133);
+}</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
@@ -120,7 +171,7 @@
         <widget class="QPushButton" name="bottoneIndietro">
          <property name="minimumSize">
           <size>
-           <width>70</width>
+           <width>90</width>
            <height>40</height>
           </size>
          </property>
@@ -146,9 +197,14 @@
         <widget class="QPushButton" name="bottoneModifica">
          <property name="minimumSize">
           <size>
-           <width>70</width>
+           <width>90</width>
            <height>40</height>
           </size>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton:hover {
+	background-color : rgb(252, 175, 62)
+}</string>
          </property>
          <property name="text">
           <string>Modifica</string>
@@ -198,7 +254,14 @@
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="itmLineEdit1"/>
+      <widget class="QLineEdit" name="itmLineEdit1">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="1" column="0">
       <widget class="QLabel" name="itmLabel2">
@@ -208,7 +271,14 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="itmLineEdit2"/>
+      <widget class="QLineEdit" name="itmLineEdit2">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="2" column="0">
       <widget class="QLabel" name="itmLabel3">
@@ -218,7 +288,14 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="QLineEdit" name="itmLineEdit3"/>
+      <widget class="QLineEdit" name="itmLineEdit3">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="3" column="0">
       <widget class="QLabel" name="itmLabel4">
@@ -228,10 +305,24 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QLineEdit" name="itmLineEdit4"/>
+      <widget class="QLineEdit" name="itmLineEdit4">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="4" column="0">
-      <widget class="QComboBox" name="itmCombo4"/>
+      <widget class="QComboBox" name="itmCombo4">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="4" column="1">
       <widget class="QStackedWidget" name="stackedWidget">
@@ -262,7 +353,17 @@
       </widget>
      </item>
      <item row="5" column="1">
-      <widget class="QSpinBox" name="itmSpinBox"/>
+      <widget class="QSpinBox" name="itmSpinBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
      <item row="6" column="0">
       <widget class="QLabel" name="itmLabel6">
@@ -272,7 +373,17 @@
       </widget>
      </item>
      <item row="6" column="1">
-      <widget class="QDoubleSpinBox" name="itmDoubleSpin"/>
+      <widget class="QDoubleSpinBox" name="itmDoubleSpin">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+       <property name="buttonSymbols">
+        <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+      </widget>
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="itmLabel7">
@@ -282,7 +393,14 @@
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QComboBox" name="itmComboBox"/>
+      <widget class="QComboBox" name="itmComboBox">
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>29</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item row="8" column="1">
       <widget class="QCalendarWidget" name="calendarWidget">

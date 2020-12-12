@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetRivista, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
     connect(ui->widgetConferenza, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
 
-
 }
 
 MainWindow::~MainWindow()
@@ -87,6 +86,7 @@ void MainWindow::on_SezioneB_clicked()
     ui->mainStacked->setCurrentWidget(ui->page2);
 }
 
+//Definisco cosa mostrare in base al radio button
 void MainWindow::on_AutoreButton_clicked()
 {
     hide();
@@ -153,6 +153,7 @@ void errorMsg(QListWidgetItem* item)
     msg.exec();
 }
 
+//Definisco il comportamento del bottone aggiungi
 void MainWindow::on_bottoneAggiungi_clicked()
 {
     QListWidgetItem* item = new QListWidgetItem;

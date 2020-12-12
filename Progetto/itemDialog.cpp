@@ -160,8 +160,8 @@ void itemDialog::showArticolo()
 
     ui->itmLineEdit3->setText(text);
 
-    ui->itmCombo4->addItem("Autori");
-    ui->itmCombo4->addItem("Correlati");
+    ui->itmCombo4->addItem("Autori correlati");
+    ui->itmCombo4->addItem("Articoli correlati");
     ui->itmCombo4->setCurrentIndex(0);
     ui->itmCombo4->setVisible(true);
     ui->stackedWidget->setCurrentWidget(ui->pageList);

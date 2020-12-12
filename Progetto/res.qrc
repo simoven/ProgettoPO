@@ -4,5 +4,6 @@
         <file>res/ConferenzaColor.png</file>
         <file>res/AutoreColor.png</file>
         <file>res/ArticoloColor.png</file>
+        <file>res/LinuxLogo.png</file>
     </qresource>
 </RCC>
