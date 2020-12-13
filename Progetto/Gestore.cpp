@@ -24,7 +24,6 @@ void Gestore::svuota()
 
 Gestore::~Gestore()
 {
-    qDebug() << "Distruggo";
     svuota();
 }
 
@@ -62,27 +61,59 @@ Gestore& Gestore::operator=(const Gestore &G)
     return *this;
 }
 
+void showErroreCorrelato()
+{
+    QMessageBox msg(QMessageBox::Warning, "Impossibile Modificare/Eliminare", "L'elemento è correlato ad un altro elemento");
+    msg.exec();
+}
+
+void showErroreNotValid()
+{
+    //Significa che è già presente oppure alcuni campi sono vuoti
+    QMessageBox msg(QMessageBox::Warning, "Impossibile aggiungere", "Elemento già presente oppure alcuni campi obbligatori sono vuoti");
+    msg.exec();
+}
+
 bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, int idx, bool increase)
 {
+    bool valid = true;
     for(Articolo* it : listArticoli)
         if((*it) == article)
-            return false;
+            valid = false;
 
     //Alcuni campi non possono essere vuoti
     if(article.getTitolo() == "" || article.getNumPagine() == 0)
+        valid = false;
+
+    if(!valid)
+    {
+        showErroreNotValid();
         return false;
+    }
 
     if(isNuovaAggiunta)
         listArticoli.push_back(new Articolo(article));
     else
     {
-        if(rimuoviArticolo(idx))
+        //Controllo se l'articolo che sto modificando è nei correlati di qualcuno, se si aggiorno il puntatore
+        //Perchè' sto creando un nuovo articolo con i dati modificati
+        Articolo* nuovo = new Articolo(article);
+        for(Articolo* ptr : listArticoli)
         {
-            listArticoli.insert(idx, new Articolo(article));
-            return true;
+            if(ptr != listArticoli [idx])
+            {
+                if(ptr->getCorrelati().contains(listArticoli [idx]))
+                {
+                    int indice = ptr->getCorrelati().indexOf(listArticoli [idx]);
+                    ptr->rimuoviCorrelato(indice);
+                    ptr->addCorrelato(nuovo);
+                }
+            }
         }
-        else
-            return false;
+
+        delete listArticoli [idx];
+        listArticoli.erase(listArticoli.begin() + idx);
+        listArticoli.insert(idx, nuovo);
     }
 
     if(increase)
@@ -93,12 +124,19 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
 
 bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx, bool increase)
 {
+    bool valid = true;
     for(Autore* it : listAutori)
         if((*it) == author)
-            return false;
+            valid = false;
 
     if(author.getCognome() == "" || author.getNome() == "")
+        valid = false;
+
+    if(!valid)
+    {
+        showErroreNotValid();
         return false;
+    }
 
     if(isNuovaAggiunta)
         listAutori.push_back(new Autore(author));
@@ -109,8 +147,7 @@ bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx
             listAutori.insert(idx, new Autore(author));
             return true;
         }
-        else
-            return false;
+        else return false;
     }
 
     if(increase)
@@ -121,12 +158,19 @@ bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx
 
 bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiunta, int idx)
 {
+    bool valid = true;
     for(Conferenza* it : listConferenze)
         if(*it == conference)
-            return false;
+            valid = false;
 
     if(conference.getNome() == "" || conference.getLuogo() == "")
+        valid = false;
+
+    if(!valid)
+    {
+        showErroreNotValid();
         return false;
+    }
 
     if(isNuovaAggiunta)
         listConferenze.push_back(new Conferenza(conference));
@@ -137,8 +181,7 @@ bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiu
             listConferenze.insert(idx, new Conferenza(conference));
             return true;
         }
-        else
-            return false;
+        else return false;
     }
 
     return true;
@@ -146,12 +189,19 @@ bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiu
 
 bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int idx)
 {
+    bool valid = true;
     for(Rivista* it : listRiviste)
         if(*it == paper)
-            return false;
+            valid = false;
 
     if(paper.getNome() == "")
+        valid = false;
+
+    if(!valid)
+    {
+        showErroreNotValid();
         return false;
+    }
 
     if(isNuovaAggiunta)
         listRiviste.push_back(new Rivista(paper));
@@ -162,69 +212,83 @@ bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int id
             listRiviste.insert(idx, new Rivista(paper));
             return true;
         }
-        else
-            return false;
+        else return false;
     }
 
     return true;
 }
 
-void showMsgErrore()
-{
-    QMessageBox msg(QMessageBox::Warning, "Impossibile eliminare", "L'elemento è correlato ad un altro elemento");
-    msg.exec();
-}
-
 bool Gestore::rimuoviArticolo(int idx)
 {
-    if(!listArticoli.at(idx)->getIsCorrelato())
+    bool isCorrelato = false;
+    for(Articolo* ptr : listArticoli)
+        if(listArticoli [idx] != ptr)
+            if(ptr->getCorrelati().contains(listArticoli [idx]))
+                isCorrelato = true;
+
+    if(!isCorrelato)
     {
         delete listArticoli.at(idx);
         listArticoli.erase(listArticoli.begin() + idx);
         return true;
     }
 
-    showMsgErrore();
+    showErroreCorrelato();
     return false;
 }
 
 bool Gestore::rimuoviAutore(int idx)
 {
-    //Controllo che questo autore non sia nella lista correlati di qualcuno
-    if(!listAutori.at(idx)->getIsCorrelato())
+    //Controllo che questo autore non sia nella lista correlati di qualche articolo
+    bool isCorrelato = false;
+    for(Articolo* ptr : listArticoli)
+        if(ptr->getAutori().contains(listAutori [idx]))
+                isCorrelato = true;
+
+    if(!isCorrelato)
     {
         delete listAutori.at(idx);
         listAutori.erase(listAutori.begin() + idx);
         return true;
     }
 
-    showMsgErrore();
+    showErroreCorrelato();
     return false;
 }
 
 bool Gestore::rimuoviConferenza(int idx)
 {
-    if(!listConferenze.at(idx)->getIsCorrelato())
+    bool isCorrelato = false;
+    for(Articolo* ptr : listArticoli)
+        if(ptr->getEditorePubblicato() == listConferenze [idx])
+                isCorrelato = true;
+
+    if(!isCorrelato)
     {
         delete listConferenze.at(idx);
         listConferenze.erase(listConferenze.begin() + idx);
         return true;
     }
 
-    showMsgErrore();
+    showErroreCorrelato();
     return false;
 }
 
 bool Gestore::rimuoviRivista(int idx)
 {
-    if(!listRiviste.at(idx)->getIsCorrelato())
+    bool isCorrelato = false;
+    for(Articolo* ptr : listArticoli)
+        if(ptr->getEditorePubblicato() == listRiviste [idx])
+                isCorrelato = true;
+
+    if(!isCorrelato)
     {
         delete listRiviste.at(idx);
         listRiviste.erase(listRiviste.begin() + idx);
         return true;
     }
 
-    showMsgErrore();
+    showErroreCorrelato();
     return false;
 }
 

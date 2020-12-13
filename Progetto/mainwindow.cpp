@@ -145,15 +145,7 @@ void MainWindow::on_RivistaButton_clicked()
 
 //Fine bottoni vari
 
-void errorMsg(QListWidgetItem* item)
-{
-    //Significa che è già presente oppure alcuni campi sono vuoti
-    delete item;
-    QMessageBox msg(QMessageBox::Warning, "Impossibile aggiungere", "Elemento già presente oppure alcuni campi obbligatori sono vuoti");
-    msg.exec();
-}
 
-//Definisco il comportamento del bottone aggiungi
 void MainWindow::on_bottoneAggiungi_clicked()
 {
     QListWidgetItem* item = new QListWidgetItem;
@@ -173,9 +165,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
             ui->widgetAutore->addItem(item);
 
         }
-        else
-            errorMsg(item);
-
     }
     else if(ui->ArticoloButton->isChecked())
     {
@@ -192,9 +181,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setCheckState(Qt::Unchecked);
             ui->widgetArticolo->addItem(item);
         }
-        else
-            errorMsg(item);
-
     }
     else if(ui->ConferenzaButton->isChecked())
     {
@@ -214,9 +200,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setIcon(QIcon(":/res/ConferenzaColor.png"));
             ui->widgetConferenza->addItem(item);
         }
-        else
-            errorMsg(item);
-
     }
     else if(ui->RivistaButton->isChecked())
     {
@@ -234,8 +217,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setCheckState(Qt::Unchecked);
             ui->widgetRivista->addItem(item);
         }
-        else
-            errorMsg(item);
     }
     else
     {
@@ -318,17 +299,15 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
                 delete itm->takeItem(i);
                 i--;
             }
-
         }
 
     }
-
     ui->bottoneRimuovi->setVisible(false);
 }
 
 void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
 {
-    //Prendo il puntatore alla lista su cui è stata chiamat la funzione
+    //Prendo il puntatore alla lista su cui è stata chiamata la funzione
     QListWidget* ptrList = qobject_cast <QListWidget*> (sender());
 
     int idx = 0;
@@ -348,5 +327,6 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
     itemDialog dialog(idx, tipo, &gestore, item);
     dialog.setModal(true);
     dialog.exec();
+
 }
 

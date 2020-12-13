@@ -10,8 +10,6 @@ int Articolo::getNumPagine() const { return nPagine; }
 
 double Articolo::getPrezzo() const { return prezzo; }
 
-bool Articolo::getIsCorrelato() const { return isCorrelato; }
-
 const QList <Autore*>& Articolo::getAutori() const { return listAutori; }
 
 const QList <QString>& Articolo::getKeyword() const { return listKeyword; }
@@ -28,11 +26,11 @@ void Articolo::setNumPagine(int numPag) { nPagine = numPag; }
 
 void Articolo::setPrezzo(double price) { prezzo = price; }
 
-void Articolo::setIsCorrelato(bool x) { isCorrelato = x; }
-
 void Articolo::addAutore(Autore* author) { listAutori.push_back(author); }
 
 void Articolo::setEditorePubblicato(Base *ptr) { editorePubblicato = ptr; }
+
+void Articolo::rimuoviCorrelato(int idx) { listCorrelati.erase(listCorrelati.begin() + idx); }
 
 void Articolo::addKeyword(QString keyword)
 {

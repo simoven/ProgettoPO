@@ -56,19 +56,6 @@ void itemDialog::on_bottoneIndietro_clicked()
     done(0);
 }
 
-void errorMsg()
-{
-    //Significa che è già presente oppure alcuni campi sono vuoti
-    QMessageBox msg(QMessageBox::Warning, "Impossibile aggiungere", "Elemento già presente oppure alcuni campi obbligatori sono vuoti");
-    msg.exec();
-}
-
-void showErroreCorrelato()
-{
-    QMessageBox msg(QMessageBox::Warning, "Impossibile Modificare", "Non puoi modificare un elemento correlato ad un altro elemento");
-    msg.exec();
-}
-
 void itemDialog::hide()
 {
     ui->itmLineEdit1->setVisible(false);
@@ -122,18 +109,20 @@ void itemDialog::riempiLista(int option)
     {
         QList <Articolo*> listArticoli = ptrArt->getCorrelati();
         QList <Articolo*> tuttiArticoli = ptrGestore->getArticoli();
+        int contaElem = 0;
         for(int i = 0; i < tuttiArticoli.size(); i++)
         {
             //Controllo prima di non aggiungere l'articolo a se stesso
             if(i != index)
             {
-                qDebug() << "correlati qui,    i:" << i ;
                 ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
 
                 if(listArticoli.contains(tuttiArticoli [i]))
-                    ui->listWidget->item(i)->setCheckState(Qt::Checked);
+                    ui->listWidget->item(contaElem)->setCheckState(Qt::Checked);
                 else
-                    ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+                    ui->listWidget->item(contaElem)->setCheckState(Qt::Unchecked);
+
+                contaElem++;
             }
         }
 
@@ -173,8 +162,8 @@ void itemDialog::showArticolo()
     ui->itmCombo4->setCurrentIndex(0);
     ui->itmCombo4->setVisible(true);
     ui->stackedWidget->setCurrentWidget(ui->pageList);
-    riempiLista(ui->itmCombo4->currentIndex());
 
+    riempiLista(ui->itmCombo4->currentIndex());
 
     ui->itmLabel7->setText("Pubblicato per");
     ui->itmComboBox->setVisible(true);
@@ -252,26 +241,13 @@ void itemDialog::on_bottoneModifica_clicked()
         QString x = ui->itmLineEdit3->text();
         temp.setIdentificativo(x.toInt());
 
-        if(!author->getIsCorrelato())
-        {
-            if(ptrGestore->aggiungiAutore(temp, false, index, false))
-                listItem->setText(temp.getNome() + " " + temp.getCognome());
-            else
-                errorMsg();
-        }
-        else
-            showErroreCorrelato();
+
+        if(ptrGestore->aggiungiAutore(temp, false, index, false))
+            listItem->setText(temp.getNome() + " " + temp.getCognome());
 
     }
     else if(type == cArticolo)
     {
-
-        if(article->getEditorePubblicato() != nullptr)
-        {
-            Base* ptr = article->getEditorePubblicato();
-            ptr->setIsCorrelato(false);
-        }
-
         Articolo articleTmp;
         articleTmp.setTitolo(ui->itmLineEdit1->text());
         articleTmp.addKeyword(ui->itmLineEdit3->text());
@@ -281,10 +257,9 @@ void itemDialog::on_bottoneModifica_clicked()
         articleTmp.setIdentificativo(x.toInt());
         int indexEditor = ui->itmComboBox->currentIndex();
 
+
         if(indexEditor == 0)
-        {
             articleTmp.setEditorePubblicato(nullptr);
-        }
         else
         {
             //Se l'indice è maggiore della size delle conferenze vuol dire che ho selezionato una rivista
@@ -293,47 +268,35 @@ void itemDialog::on_bottoneModifica_clicked()
             else
                 articleTmp.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
 
-            articleTmp.getEditorePubblicato()->setIsCorrelato(true);
         }
-
 
         if(ui->itmCombo4->currentIndex() == 0) // prendo autori nella list widget e vedo a chi sono correlato
         {
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
-                {
                     articleTmp.addAutore(ptrGestore->getAutori() [i]);
-                    ptrGestore->getAutori() [i]->setIsCorrelato(true);
-                }
-                else
-                    ptrGestore->getAutori() [i]->setIsCorrelato(false);
             }
         }
         else // prendo articoli nella list widget e vedo a chi sono correlato
         {
+            int correctIdx = 0;
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
+                //Risolvo lo sfasamento tra gli indici della lista Articoli e del listWidget (poichè non considero l'articolo attuale)
+                if(i == index)
+                    correctIdx++;
+
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
-                {
-                    articleTmp.addCorrelato(ptrGestore->getArticoli() [i]);
-                    ptrGestore->getArticoli() [i]->setIsCorrelato(true);
-                }
-                else
-                    ptrGestore->getArticoli() [i]->setIsCorrelato(false);
+                    articleTmp.addCorrelato(ptrGestore->getArticoli() [correctIdx]);
+
+                correctIdx++;
             }
         }
 
+       if(ptrGestore->aggiungiArticolo(articleTmp, false, index, false))
+            listItem->setText(articleTmp.getTitolo());
 
-        if(!article->getIsCorrelato())
-        {
-            if(ptrGestore->aggiungiArticolo(articleTmp, false, index, false))
-                listItem->setText(articleTmp.getTitolo());
-            else
-                errorMsg();
-        }
-        else
-            showErroreCorrelato();
     }
     else if(type == cConferenza)
     {
@@ -345,16 +308,9 @@ void itemDialog::on_bottoneModifica_clicked()
         tmp.setData(ui->calendarWidget->selectedDate());
         tmp.addOrganizzatore(ui->itmPlainText->toPlainText());
 
-        if(!conference->getIsCorrelato())
-        {
-            if(ptrGestore->aggiungiConferenza(tmp, false, index))
-                listItem->setText(tmp.getNome());
-            else
-                errorMsg();
-        }
-        else
-            showErroreCorrelato();
 
+        if(ptrGestore->aggiungiConferenza(tmp, false, index))
+            listItem->setText(tmp.getNome());
     }
     else
     {
@@ -365,15 +321,9 @@ void itemDialog::on_bottoneModifica_clicked()
         temp.setVolume(ui->itmSpinBox->value());
         temp.setData(ui->calendarWidget->selectedDate());
 
-        if(!temp.getIsCorrelato())
-        {
-            if(ptrGestore->aggiungiRivista(temp, false, index))
+
+        if(ptrGestore->aggiungiRivista(temp, false, index))
                 listItem->setText(paper->getNome());
-            else
-                errorMsg();
-        }
-        else
-            showErroreCorrelato();
     }
 
     done(0);

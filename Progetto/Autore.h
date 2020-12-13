@@ -15,14 +15,12 @@ class Autore
         QString getIdentificativo() const;
         QString getNome() const;
         QString getCognome() const;
-        bool getIsCorrelato() const;
         const QList <QString>& getAfferenze() const;
 
         void setNome(QString name);
         void setIdentificativo(int number);
         void setCognome(QString surname);
         void addAfferenze(QString workplace);
-        void setIsCorrelato(bool x);
 
         bool operator==(const Autore& A) const;
 };

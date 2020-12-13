@@ -28,7 +28,6 @@ class Articolo
         const QList <QString>& getKeyword() const;
         const QList <Articolo*>& getCorrelati() const;
         Base* getEditorePubblicato() const;
-        bool getIsCorrelato() const;
 
         void setIdentificativo(int number);
         void setTitolo(QString title);
@@ -38,7 +37,7 @@ class Articolo
         void addKeyword(QString keyword);
         void addCorrelato(Articolo* corr);
         void setEditorePubblicato(Base* ptr);
-        void setIsCorrelato(bool x);
+        void rimuoviCorrelato(int idx);
 
         bool operator==(const Articolo& A) const;
 };
