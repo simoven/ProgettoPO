@@ -58,6 +58,10 @@ void Articolo::addKeyword(QString keyword)
 
 void Articolo::addCorrelato(Articolo* corr) { listCorrelati.push_back(corr); }
 
+void Articolo::setListAutori(QList<Autore *> ls) { listAutori = ls; }
+
+void Articolo::setListCorrelati(QList<Articolo *> ls) { listCorrelati = ls; }
+
 bool Articolo::operator==(const Articolo& A) const
 {
     if(titolo != A.titolo || nPagine != A.nPagine || prezzo != A.prezzo)

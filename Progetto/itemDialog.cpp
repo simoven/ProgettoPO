@@ -267,11 +267,11 @@ void itemDialog::on_bottoneModifica_clicked()
                 articleTmp.setEditorePubblicato(ptrGestore->getRiviste() [indexEditor - ptrGestore->getConferenze().size() - 1]);
             else
                 articleTmp.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
-
         }
 
         if(ui->itmCombo4->currentIndex() == 0) // prendo autori nella list widget e vedo a chi sono correlato
         {
+            articleTmp.setListCorrelati(ptrGestore->getArticoli() [index]->getCorrelati());
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
@@ -280,6 +280,7 @@ void itemDialog::on_bottoneModifica_clicked()
         }
         else // prendo articoli nella list widget e vedo a chi sono correlato
         {
+            articleTmp.setListAutori(ptrGestore->getArticoli() [index]->getAutori());
             int correctIdx = 0;
             for(int i = 0; i < ui->listWidget->count(); i++)
             {

@@ -38,6 +38,8 @@ class Articolo
         void addCorrelato(Articolo* corr);
         void setEditorePubblicato(Base* ptr);
         void rimuoviCorrelato(int idx);
+        void setListAutori(QList <Autore*> ls);
+        void setListCorrelati(QList <Articolo*> ls);
 
         bool operator==(const Articolo& A) const;
 };
