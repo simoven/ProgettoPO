@@ -100,7 +100,7 @@ QPlainTextEdit {
        <widget class="QPushButton" name="SezioneA">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>110</width>
           <height>26</height>
          </size>
         </property>
@@ -119,7 +119,7 @@ QPlainTextEdit {
        <widget class="QPushButton" name="SezioneB">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>110</width>
           <height>26</height>
          </size>
         </property>
@@ -130,7 +130,7 @@ QPlainTextEdit {
          </size>
         </property>
         <property name="text">
-         <string>Sezione 2</string>
+         <string>Ricerca Autori</string>
         </property>
        </widget>
       </item>
@@ -138,7 +138,7 @@ QPlainTextEdit {
        <widget class="QPushButton" name="SezioneC">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>110</width>
           <height>26</height>
          </size>
         </property>
@@ -149,7 +149,7 @@ QPlainTextEdit {
          </size>
         </property>
         <property name="text">
-         <string>Sezione 3</string>
+         <string>Ricerca Rivista</string>
         </property>
        </widget>
       </item>
@@ -157,7 +157,7 @@ QPlainTextEdit {
        <widget class="QPushButton" name="SezioneD">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>110</width>
           <height>26</height>
          </size>
         </property>
@@ -176,7 +176,7 @@ QPlainTextEdit {
        <widget class="QPushButton" name="SezioneE">
         <property name="minimumSize">
          <size>
-          <width>100</width>
+          <width>110</width>
           <height>26</height>
          </size>
         </property>
@@ -248,7 +248,14 @@ QPlainTextEdit {
               <widget class="QWidget" name="pageAutore">
                <layout class="QVBoxLayout" name="verticalLayout_3">
                 <item>
-                 <widget class="QListWidget" name="widgetAutore"/>
+                 <widget class="QListWidget" name="widgetAutore">
+                  <property name="minimumSize">
+                   <size>
+                    <width>110</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                 </widget>
                 </item>
                </layout>
               </widget>
@@ -581,22 +588,269 @@ QPushButton:hover{
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="page2"/>
+      <widget class="QWidget" name="pageMetodiAutore">
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string> Tutti gli Autori</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListWidget" name="tuttiAutoriListWidget">
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>16777215</height>
+             </size>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <spacer name="horizontalSpacer_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Minimum</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_10">
+              <item>
+               <widget class="QRadioButton" name="tuttiArticoliButton">
+                <property name="text">
+                 <string>Visualizza tutti gli articoli dell'autore</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="mediaPrezziButton">
+                <property name="text">
+                 <string>Visualizza media prezzi di tutti gli articoli</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="ordinatiArticoliButton">
+                <property name="text">
+                 <string>Visualizza gli articoli dell'autore ordinati</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_10">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout_9">
+          <item>
+           <layout class="QFormLayout" name="formLayout_9">
+            <item row="0" column="1">
+             <widget class="QLineEdit" name="lineEditPrezzo">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>29</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelPrezzo">
+              <property name="text">
+               <string>Media Prezzi</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="dinamicLabel">
+            <property name="text">
+             <string> Testo</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QListWidget" name="dinamicListWidget"/>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>13</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_7">
+            <item>
+             <spacer name="horizontalSpacer_9">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>70</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QPushButton" name="eseguiButton">
+              <property name="minimumSize">
+               <size>
+                <width>90</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Esegui</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacer_2">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Fixed</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>13</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="pageMetodiRivista">
+       <widget class="QWidget" name="formLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>260</x>
+          <y>150</y>
+          <width>281</width>
+          <height>141</height>
+         </rect>
+        </property>
+        <layout class="QFormLayout" name="formLayout_6">
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lineEdit_2"/>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>TextLabel</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1061</width>
-     <height>22</height>
-    </rect>
-   </property>
-  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
  </widget>
+ <tabstops>
+  <tabstop>SezioneA</tabstop>
+  <tabstop>SezioneB</tabstop>
+  <tabstop>SezioneC</tabstop>
+  <tabstop>SezioneD</tabstop>
+  <tabstop>SezioneE</tabstop>
+  <tabstop>lineEdit1</tabstop>
+  <tabstop>lineEdit2</tabstop>
+  <tabstop>lineEdit3</tabstop>
+  <tabstop>plainText</tabstop>
+  <tabstop>spinBox</tabstop>
+  <tabstop>doubleSpinBox</tabstop>
+  <tabstop>calendarWidget</tabstop>
+  <tabstop>bottoneRimuovi</tabstop>
+  <tabstop>bottoneAggiungi</tabstop>
+  <tabstop>AutoreButton</tabstop>
+  <tabstop>ArticoloButton</tabstop>
+  <tabstop>ConferenzaButton</tabstop>
+  <tabstop>RivistaButton</tabstop>
+  <tabstop>widgetAutore</tabstop>
+  <tabstop>widgetRivista</tabstop>
+  <tabstop>widgetConferenza</tabstop>
+  <tabstop>widgetArticolo</tabstop>
+ </tabstops>
  <resources>
   <include location="res.qrc"/>
  </resources>

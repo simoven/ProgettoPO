@@ -30,7 +30,7 @@ class itemDialog : public QDialog
 
     void on_itmCombo4_currentIndexChanged(int index);
 
-private:
+    private:
         Ui::itemDialog *ui;
         Autore* author;
         Rivista* paper;

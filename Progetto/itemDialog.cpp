@@ -53,6 +53,10 @@ itemDialog::~itemDialog()
 
 void itemDialog::on_bottoneIndietro_clicked()
 {
+    if(type == cArticolo)
+        if(ptrGestore->getArticoli() [index]->getAutori().size() == 0 || ptrGestore->getArticoli() [index]->getEditorePubblicato() == nullptr)
+            return;
+
     done(0);
 }
 
@@ -94,8 +98,8 @@ void itemDialog::riempiLista(int option)
     Articolo* ptrArt = ptrGestore->getArticoli() [index];
     if(option == 0) //Autori correlati
     {
-        QList <Autore*> listAutori = ptrArt->getAutori();
-        QList <Autore*> tuttiAutori = ptrGestore->getAutori();
+        auto listAutori = ptrArt->getAutori();
+        auto tuttiAutori = ptrGestore->getAutori();
         for(int i = 0; i < tuttiAutori.size(); i++)
         {
             ui->listWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
@@ -107,8 +111,8 @@ void itemDialog::riempiLista(int option)
     }
     else //Articoli correlati
     {
-        QList <Articolo*> listArticoli = ptrArt->getCorrelati();
-        QList <Articolo*> tuttiArticoli = ptrGestore->getArticoli();
+        auto listArticoli = ptrArt->getCorrelati();
+        auto tuttiArticoli = ptrGestore->getArticoli();
         int contaElem = 0;
         for(int i = 0; i < tuttiArticoli.size(); i++)
         {
@@ -157,7 +161,7 @@ void itemDialog::showArticolo()
 
     ui->itmLineEdit3->setText(text);
 
-    ui->itmCombo4->addItem("Autori correlati");
+    ui->itmCombo4->addItem("Autori ");
     ui->itmCombo4->addItem("Articoli correlati");
     ui->itmCombo4->setCurrentIndex(0);
     ui->itmCombo4->setVisible(true);
@@ -297,6 +301,8 @@ void itemDialog::on_bottoneModifica_clicked()
 
        if(ptrGestore->aggiungiArticolo(articleTmp, false, index, false))
             listItem->setText(articleTmp.getTitolo());
+       else
+           return;
 
     }
     else if(type == cConferenza)

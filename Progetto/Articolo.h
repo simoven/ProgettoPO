@@ -4,8 +4,6 @@
 #include "Autore.h"
 #include "Base.h"
 
-enum Tipo {CONFERENZA = 0, RIVISTA};
-
 class Articolo
 {
     private :

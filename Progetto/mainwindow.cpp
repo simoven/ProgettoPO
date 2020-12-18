@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetArticolo, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
     connect(ui->widgetRivista, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
     connect(ui->widgetConferenza, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
-
 }
 
 MainWindow::~MainWindow()
@@ -76,6 +75,18 @@ void MainWindow::hide()
 
 //Bottoni vari
 
+void MainWindow::mostraTuttiAutori()
+{
+    ui->tuttiAutoriListWidget->clear();
+    auto listAutori = gestore.getAutori();
+    for(int i = 0; i < listAutori.size(); i++)
+    {
+        ui->tuttiAutoriListWidget->addItem(listAutori [i]->getNome() + " " + listAutori [i]->getCognome());
+        ui->tuttiAutoriListWidget->item(i)->setCheckState(Qt::Unchecked);
+        ui->tuttiAutoriListWidget->item(i)->setIcon(QIcon(":/res/AutoreColor.png"));
+    }
+}
+
 void MainWindow::on_SezioneA_clicked()
 {
     ui->mainStacked->setCurrentWidget(ui->pageMain);
@@ -83,7 +94,14 @@ void MainWindow::on_SezioneA_clicked()
 
 void MainWindow::on_SezioneB_clicked()
 {
-    ui->mainStacked->setCurrentWidget(ui->page2);
+    ui->mainStacked->setCurrentWidget(ui->pageMetodiAutore);
+    mostraTuttiAutori();
+    hide2();
+}
+
+void MainWindow::on_SezioneC_clicked()
+{
+    ui->mainStacked->setCurrentWidget(ui->pageMetodiRivista);
 }
 
 //Definisco cosa mostrare in base al radio button
@@ -163,23 +181,35 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setIcon(QIcon(":/res/AutoreColor.png"));
             item->setCheckState(Qt::Unchecked);
             ui->widgetAutore->addItem(item);
-
+            ui->statusBar->showMessage("Aggiunto !", 3000);
         }
     }
     else if(ui->ArticoloButton->isChecked())
     {
-        Articolo article;
-        article.setTitolo(ui->lineEdit1->text());
-        QString keyword = ui->lineEdit2->text();
-        article.addKeyword(keyword);
-        article.setNumPagine(ui->spinBox->value());
-        article.setPrezzo(ui->doubleSpinBox->value());
-        if(gestore.aggiungiArticolo(article))
+        if(gestore.getAutori().size() == 0 || (gestore.getConferenze().size() == 0 && gestore.getRiviste().size() == 0))
         {
-            item->setText(article.getTitolo());
-            item->setIcon(QIcon(":/res/ArticoloColor.png"));
-            item->setCheckState(Qt::Unchecked);
-            ui->widgetArticolo->addItem(item);
+            QMessageBox error(QMessageBox::Warning, "Impossobile aggiungere", "Non ci sono autori e/o riviste/conferenze sufficienti");
+            error.exec();
+
+        }
+        else
+        {
+            Articolo article;
+            article.setTitolo(ui->lineEdit1->text());
+            QString keyword = ui->lineEdit2->text();
+            article.addKeyword(keyword);
+            article.setNumPagine(ui->spinBox->value());
+            article.setPrezzo(ui->doubleSpinBox->value());
+            if(gestore.aggiungiArticolo(article))
+            {
+                item->setText(article.getTitolo());
+                item->setIcon(QIcon(":/res/ArticoloColor.png"));
+                item->setCheckState(Qt::Unchecked);
+                ui->widgetArticolo->addItem(item);
+                itemDialog dialog(ui->widgetArticolo->count() - 1, cArticolo, &gestore, ui->widgetArticolo->item(ui->widgetArticolo->count() - 1));
+                dialog.exec();
+                ui->statusBar->showMessage("Aggiunto !", 3000);
+            }
         }
     }
     else if(ui->ConferenzaButton->isChecked())
@@ -199,6 +229,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setCheckState(Qt::Unchecked);
             item->setIcon(QIcon(":/res/ConferenzaColor.png"));
             ui->widgetConferenza->addItem(item);
+            ui->statusBar->showMessage("Aggiunto !", 3000);
         }
     }
     else if(ui->RivistaButton->isChecked())
@@ -216,6 +247,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
             item->setIcon(QIcon(":/res/RivistaColor.png"));
             item->setCheckState(Qt::Unchecked);
             ui->widgetRivista->addItem(item);
+            ui->statusBar->showMessage("Aggiunto !", 3000);
         }
     }
     else
@@ -327,6 +359,94 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
     itemDialog dialog(idx, tipo, &gestore, item);
     dialog.setModal(true);
     dialog.exec();
-
 }
 
+
+//Bottone esegui della pagina "Ricerca Autore"
+void MainWindow::on_eseguiButton_clicked()
+{
+    ui->dinamicListWidget->clear();
+
+    //Cerco l'autore che è stato selezionato, se piu' autori sono stati selezionati, prendo quello piu' in alto
+    int idxChecked = -1;
+    for(int i = 0; i < ui->tuttiAutoriListWidget->count(); i++)
+    {
+        if(ui->tuttiAutoriListWidget->item(i)->checkState() == Qt::Checked)
+        {
+            idxChecked = i;
+            break;
+        }
+    }
+
+
+    QList <Articolo*> listArticoli;
+    if(idxChecked != -1)
+    {
+        listArticoli = gestore.getArticoliPerAutore(idxChecked);
+
+        if(ui->tuttiArticoliButton->isChecked())
+        {
+            for(int i = 0; i < listArticoli.size(); i++)
+            {
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "     " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
+            }
+        }
+        else if(ui->mediaPrezziButton->isChecked())
+        {
+            double price = 0;
+            for(int i = 0; i < listArticoli.size(); i++)
+                price += listArticoli [i]->getPrezzo();
+
+            if(listArticoli.size() != 0)
+                price /= listArticoli.size();
+
+            ui->lineEditPrezzo->setText(QString::number(price));
+        }
+        else if(ui->ordinatiArticoliButton->isChecked())
+        {
+            listArticoli = gestore.getArticoliPerAutoreSorted(idxChecked);
+            for(int i = 0; i < listArticoli.size(); i++)
+            {
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "     " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
+            }
+        }
+        else
+        {
+            QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
+            msg.exec();
+        }
+    }
+}
+
+void MainWindow::hide2()
+{
+    ui->labelPrezzo->setVisible(false);
+    ui->lineEditPrezzo->setVisible(false); ui->lineEditPrezzo->setReadOnly(true);
+    ui->dinamicLabel->setVisible(false);
+    ui->dinamicListWidget->setVisible(false); ui->dinamicListWidget->clear();
+}
+
+void MainWindow::on_tuttiArticoliButton_clicked()
+{
+    hide2();
+    ui->dinamicLabel->setVisible(true);
+    ui->dinamicLabel->setText("Tutti gli articoli dell'autore selezionato");
+    ui->dinamicListWidget->setVisible(true);
+}
+
+void MainWindow::on_mediaPrezziButton_clicked()
+{
+    hide2();
+    ui->labelPrezzo->setVisible(true);
+    ui->lineEditPrezzo->setVisible(true);
+}
+
+void MainWindow::on_ordinatiArticoliButton_clicked()
+{
+    hide2();
+    ui->dinamicLabel->setVisible(true);
+    ui->dinamicLabel->setText("Articoli ordinati dell'autore selezionato");
+    ui->dinamicListWidget->setVisible(true);
+}

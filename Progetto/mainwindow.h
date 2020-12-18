@@ -35,6 +35,7 @@ class MainWindow : public QMainWindow
     private slots:
             void on_SezioneA_clicked();
             void on_SezioneB_clicked();
+            void on_SezioneC_clicked();
 
             void on_AutoreButton_clicked();
             void on_ArticoloButton_clicked();
@@ -48,6 +49,10 @@ class MainWindow : public QMainWindow
             void on_bottoneRimuovi_clicked();
             void onRimuoviItem(QListWidget* itm);
 
+            void on_eseguiButton_clicked();
+            void on_tuttiArticoliButton_clicked();
+            void on_mediaPrezziButton_clicked();
+            void on_ordinatiArticoliButton_clicked();
 
     signals:
             void widgetClicked(QListWidget* itm);
@@ -58,6 +63,8 @@ class MainWindow : public QMainWindow
             Ui::MainWindow *ui;
             Gestore gestore;
             void hide();
+            void hide2();
+            void mostraTuttiAutori();
             void svuotaLineEdit();
 };
 

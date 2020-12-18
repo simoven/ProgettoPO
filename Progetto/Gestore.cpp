@@ -82,8 +82,14 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
             valid = false;
 
     //Alcuni campi non possono essere vuoti
-    if(article.getTitolo() == "" || article.getNumPagine() == 0)
+    if(article.getTitolo() == "" || article.getNumPagine() == 0 || article.getKeyword().size() == 0)
         valid = false;
+
+    if(!isNuovaAggiunta)
+    {
+        if(article.getAutori().size() == 0 || article.getEditorePubblicato() == nullptr)
+            valid = false;
+    }
 
     if(!valid)
     {
@@ -310,6 +316,52 @@ const QList <Conferenza*>& Gestore::getConferenze() const
 const QList <Rivista*>& Gestore::getRiviste() const
 {
     return listRiviste;
+}
+
+const QList <Articolo*> Gestore::getArticoliPerAutore(int idx) const
+{
+    Autore* ptr = listAutori [idx];
+    QList <Articolo*> nuovalistArticoli;
+    for(int i = 0; i < listArticoli.size(); i++)
+    {
+        if(listArticoli [i]->getAutori().contains(ptr))
+            nuovalistArticoli.push_back(listArticoli [i]);
+    }
+
+    return nuovalistArticoli;
+}
+
+bool compara(Articolo* item1, Articolo* item2)
+{
+    //Se l'articolo non è stato pubblicato per una rivista/conferenza, imposto l'anno di default a 2020
+    int anno1 = 0, anno2 = 0;
+
+    anno1 = item1->getEditorePubblicato()->getData().year();
+    anno2 = item2->getEditorePubblicato()->getData().year();
+
+    if(anno1 < anno2)
+        return true;
+
+    if(anno2 > anno1)
+        return false;
+
+    if(item1->getPrezzo() > item2->getPrezzo())
+        return true;
+
+    if(item1->getPrezzo() < item2->getPrezzo())
+        return false;
+
+    if(item1->getKeyword() [0] < item2->getKeyword() [0])
+        return true;
+
+    return false;
+}
+
+const QList <Articolo*> Gestore::getArticoliPerAutoreSorted(int idx) const
+{
+    QList <Articolo*> nuovalist = getArticoliPerAutore(idx);
+    std::stable_sort(nuovalist.begin(), nuovalist.end(), compara);
+    return nuovalist;
 }
 
 
