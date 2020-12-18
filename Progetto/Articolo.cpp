@@ -56,7 +56,13 @@ void Articolo::addKeyword(QString keyword)
     }
 }
 
-void Articolo::addCorrelato(Articolo* corr) { listCorrelati.push_back(corr); }
+void Articolo::addCorrelato(Articolo* corr, int idx)
+{
+    if(idx != -1)
+        listCorrelati.insert(listCorrelati.begin() + idx, corr);
+    else
+        listCorrelati.push_back(corr);
+}
 
 void Articolo::setListAutori(QList<Autore *> ls) { listAutori = ls; }
 

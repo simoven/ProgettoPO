@@ -38,7 +38,7 @@ void Conferenza::setPartecipanti(int partecipanti) { numPartecipanti = partecipa
 
 bool Conferenza::operator==(const Conferenza &C) const
 {
-    if(getNome() != C.getNome() || getData() != C.getData() || luogo != C.luogo)
+    if(getNome() != C.getNome() || getData().year() != C.getData().year() || luogo != C.luogo)
         return false;
 
     if(listOrganizzatori != C.listOrganizzatori)

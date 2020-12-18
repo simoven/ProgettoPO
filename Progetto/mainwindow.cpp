@@ -225,7 +225,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
 
         if(gestore.aggiungiConferenza(conference))
         {
-            item->setText(conference.getNome());
+            item->setText(conference.getNome() + "      " + QString::number(conference.getData().year()));
             item->setCheckState(Qt::Unchecked);
             item->setIcon(QIcon(":/res/ConferenzaColor.png"));
             ui->widgetConferenza->addItem(item);
@@ -243,7 +243,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
 
         if(gestore.aggiungiRivista(paper))
         {
-            item->setText(paper.getNome());
+            item->setText(paper.getNome() + "      " + QString::number(paper.getData().year()));
             item->setIcon(QIcon(":/res/RivistaColor.png"));
             item->setCheckState(Qt::Unchecked);
             ui->widgetRivista->addItem(item);

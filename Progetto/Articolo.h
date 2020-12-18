@@ -33,7 +33,7 @@ class Articolo
         void setPrezzo(double price);
         void addAutore(Autore* author);
         void addKeyword(QString keyword);
-        void addCorrelato(Articolo* corr);
+        void addCorrelato(Articolo* corr, int idx = -1);
         void setEditorePubblicato(Base* ptr);
         void rimuoviCorrelato(int idx);
         void setListAutori(QList <Autore*> ls);

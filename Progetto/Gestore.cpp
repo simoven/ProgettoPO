@@ -101,8 +101,8 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
         listArticoli.push_back(new Articolo(article));
     else
     {
-        //Controllo se l'articolo che sto modificando è nei correlati di qualcuno, se si aggiorno il puntatore
-        //Perchè' sto creando un nuovo articolo con i dati modificati
+        //Controllo se l'articolo che sto modificando è nei correlati di qualche articolo, se si aggiorno il puntatore
+        //Perchè' sto creando un nuovo articolo con i dati modificati, quindi il puntatore sarà diverso
         Articolo* nuovo = new Articolo(article);
         for(Articolo* ptr : listArticoli)
         {
@@ -112,7 +112,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
                 {
                     int indice = ptr->getCorrelati().indexOf(listArticoli [idx]);
                     ptr->rimuoviCorrelato(indice);
-                    ptr->addCorrelato(nuovo);
+                    ptr->addCorrelato(nuovo, indice);
                 }
             }
         }
