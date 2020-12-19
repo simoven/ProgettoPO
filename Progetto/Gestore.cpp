@@ -405,6 +405,83 @@ const QList <Articolo*> Gestore::getArticoliPerRivistaSorted(int idx) const
     return listArticoliDiRivista;
 }
 
+const QList <QString> Gestore::getTutteKeyword() const
+{
+    //Per ogni articolo prendo le keyword e le aggiungo alla lista di keyword totali
+    QList <QString> listaKeyword;
+    for(Articolo* art : listArticoli)
+        for(QString key : art->getKeyword())
+            listaKeyword.push_back(key);
+
+    listaKeyword.removeDuplicates();
+
+    return listaKeyword;
+}
+
+const QList <double> Gestore::getGuadagnoPerKeyword(const QList<QString> &listaKeyword) const
+{
+    QList <double> listaCosti;
+
+    //Per ogni keyword nella lista, prendo l'articolo che la contiene e aggiungo il suo prezzo
+    for(QString key : listaKeyword)
+    {
+        double guadagno = 0;
+        for(Articolo* art : listArticoli)
+        {
+            if(art->getKeyword().contains(key))
+                guadagno += art->getPrezzo();
+        }
+
+        listaCosti.push_back(guadagno);
+    }
+
+    return listaCosti;
+}
+
+const QList <QString> Gestore::getKeywordConferenzaAt(int idx) const
+{
+    //Per ogni articolo pubblicato per una certa conferenza, prendo le sue keyword
+    Base* ptrConferenza = listConferenze [idx];
+    QList <QString> keyList;
+
+    for(Articolo* ptrArt : listArticoli)
+    {
+        if(ptrArt->getEditorePubblicato() == ptrConferenza)
+        {
+            for(QString key : ptrArt->getKeyword())
+                keyList.push_back(key);
+        }
+    }
+
+    keyList.removeDuplicates();
+
+    return keyList;
+}
+
+bool Gestore::areSimilar(const QList<QString> &listaKeyword1, const QList<QString> &listaKeyword2) const
+{
+    QList <QString> keywordTotali = listaKeyword1;
+
+    for(QString key : listaKeyword2)
+        keywordTotali.push_back(key);
+
+    keywordTotali.removeDuplicates();
+
+    int keywordComuni = 0;
+
+    for(QString key : keywordTotali)
+        if(listaKeyword1.contains(key) && listaKeyword2.contains(key))
+            keywordComuni++;
+
+    double percentage = static_cast<double> (keywordComuni) / keywordTotali.size();
+    percentage *= 100;
+
+    if(percentage >= 80)
+        return true;
+
+    return false;
+}
+
 
 
 

@@ -32,6 +32,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetArticolo, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
     connect(ui->widgetRivista, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
     connect(ui->widgetConferenza, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
+
+    connect(ui->conferenzeSimiliButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
+    connect(ui->keywordButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
 }
 
 MainWindow::~MainWindow()
@@ -98,6 +101,9 @@ void MainWindow::disattivaRadioButton()
     ui->tuttiArticoliRivistaButton->setAutoExclusive(false); ui->tuttiArticoliRivistaButton->setChecked(false); ui->tuttiArticoliRivistaButton->setAutoExclusive(true);
     ui->guadagnoRivistaButton->setAutoExclusive(false); ui->guadagnoRivistaButton->setChecked(false); ui->guadagnoRivistaButton->setAutoExclusive(true);
     ui->articoliOrdinatiButton->setAutoExclusive(false); ui->articoliOrdinatiButton->setChecked(false); ui->articoliOrdinatiButton->setAutoExclusive(true);
+
+    ui->conferenzeSimiliButton->setAutoExclusive(false); ui->conferenzeSimiliButton->setChecked(false); ui->conferenzeSimiliButton->setAutoExclusive(true);
+    ui->keywordButton->setAutoExclusive(false); ui->keywordButton->setChecked(false); ui->keywordButton->setAutoExclusive(true);
 }
 
 void MainWindow::on_SezioneA_clicked()
@@ -119,6 +125,14 @@ void MainWindow::on_SezioneC_clicked()
     ui->mainStacked->setCurrentWidget(ui->pageMetodiRivista);
     mostraTutteRiviste();
     hide3();
+}
+
+void MainWindow::on_SezioneD_clicked()
+{
+    disattivaRadioButton();
+    ui->dinamicLabelMisto->setText("");
+    ui->mainStacked->setCurrentWidget(ui->pageMetodiMisti);
+    mostraTutteConferenze();
 }
 
 //Definisco cosa mostrare in base al radio button
@@ -552,7 +566,6 @@ void MainWindow::on_cercaButton_clicked()
             QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
             msg.exec();
         }
-
     }
 }
 
@@ -588,3 +601,90 @@ void MainWindow::on_articoliOrdinatiButton_clicked()
     ui->dinamicLabelRivista->setText("Articoli ordinati pubblicati per la rivista ");
     ui->dinamicListWidgetRivista->setVisible(true);
 }
+
+
+
+void MainWindow::mostraTutteConferenze()
+{
+    ui->tutteConferenzeListWidget->clear();
+    auto tutteConferenze = gestore.getConferenze();
+    for(int i = 0; i < tutteConferenze.size(); i++)
+    {
+        ui->tutteConferenzeListWidget->addItem(tutteConferenze [i]->getNome() + "      " + QString::number(tutteConferenze [i]->getData().year()));
+        ui->tutteConferenzeListWidget->item(i)->setIcon(QIcon(":res/ConferenzaColor.png"));
+        ui->tutteConferenzeListWidget->item(i)->setCheckState(Qt::Unchecked);
+    }
+}
+
+void MainWindow::on_eseguiButtonMisto_clicked()
+{
+    ui->dinamicListWidgetMisto->clear();
+
+    if(ui->conferenzeSimiliButton->isChecked())
+    {
+        int idxChecked = -1;
+        for(int i = 0; i < ui->tutteConferenzeListWidget->count(); i++)
+        {
+            if(ui->tutteConferenzeListWidget->item(i)->checkState() == Qt::Checked)
+            {
+                idxChecked = i;
+                break;
+            }
+        }
+
+        if(idxChecked != -1)
+        {
+            ui->dinamicLabelMisto->setText("Conferenze simili a quella selezionata");
+            auto listKeywordConferenza = gestore.getKeywordConferenzaAt(idxChecked);
+            int indexList = 0;
+
+            for(int i = 0; i < gestore.getConferenze().size(); i++)
+            {
+                if(i != idxChecked)
+                {
+                    auto listKeywordConferenzaSecondaria = gestore.getKeywordConferenzaAt(i);
+                    if(gestore.areSimilar(listKeywordConferenza, listKeywordConferenzaSecondaria))
+                    {
+                        ui->dinamicListWidgetMisto->addItem(gestore.getConferenze() [i]->getNome() + "      " + QString::number(gestore.getConferenze()[i]->getData().year()));
+                        ui->dinamicListWidgetMisto->item(indexList++)->setIcon(QIcon(":res/ConferenzaColor.png"));
+                    }
+                }
+            }
+        }
+
+    }
+    else if(ui->keywordButton->isChecked())
+    {
+        ui->dinamicLabelMisto->setText("Keyword la cui somma degli articoli porta al guadagno piu' alto");
+        auto listTutteKeyword = gestore.getTutteKeyword();
+        auto listGuadagnoPerKeyword = gestore.getGuadagnoPerKeyword(listTutteKeyword);
+        int max = -1;
+
+        for(double val : listGuadagnoPerKeyword)
+            if(val > max)
+                max = val;
+
+        int idxList = 0;
+        for(int i = 0; i < listTutteKeyword.size(); i++)
+        {
+            if(listGuadagnoPerKeyword [i] == max)
+            {
+                ui->dinamicListWidgetMisto->addItem(listTutteKeyword [i] + "      " + QString::number(listGuadagnoPerKeyword [i]) + " €");
+                ui->dinamicListWidgetMisto->item(idxList++)->setIcon(QIcon("res:/ArticoloColor.png"));
+            }
+        }
+    }
+    else
+    {
+        QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
+        msg.exec();
+    }
+
+}
+
+
+
+
+
+
+

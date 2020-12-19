@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow
             void on_SezioneA_clicked();
             void on_SezioneB_clicked();
             void on_SezioneC_clicked();
+            void on_SezioneD_clicked();
 
             void on_AutoreButton_clicked();
             void on_ArticoloButton_clicked();
@@ -56,12 +57,11 @@ class MainWindow : public QMainWindow
             void on_articoliInRivisteButton_clicked();
 
             void on_cercaButton_clicked();
-
             void on_tuttiArticoliRivistaButton_clicked();
-
             void on_guadagnoRivistaButton_clicked();
-
             void on_articoliOrdinatiButton_clicked();
+
+            void on_eseguiButtonMisto_clicked();
 
 signals:
             void widgetClicked(QListWidget* itm);
@@ -75,9 +75,10 @@ signals:
             void hide2();
             void hide3();
             void disattivaRadioButton();
-            void mostraTuttiAutori();
 
+            void mostraTuttiAutori();
             void mostraTutteRiviste();
+            void mostraTutteConferenze();
             void svuotaLineEdit();
 };
 
