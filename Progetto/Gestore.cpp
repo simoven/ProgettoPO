@@ -364,6 +364,47 @@ const QList <Articolo*> Gestore::getArticoliPerAutoreSorted(int idx) const
     return nuovalist;
 }
 
+const QList <Base*> Gestore::getRivisteNonPubblicateDaAutore(int idx) const
+{
+    auto listArticoliPerAutore = getArticoliPerAutore(idx);
+    //Prendo inizialmente tutte le riviste e poi rimuovo quelle per cui l'autore non ha pubblicato
+    QList <Base*> listTutteRiviste;
+    for(Base* ptr : listRiviste)
+        listTutteRiviste.push_back(ptr);
+
+    for(Articolo* ptr : listArticoliPerAutore)
+        if(listTutteRiviste.contains(ptr->getEditorePubblicato()))
+            listTutteRiviste.erase(listTutteRiviste.begin() + listTutteRiviste.indexOf(ptr->getEditorePubblicato()));
+
+    return listTutteRiviste;
+}
+
+const QList <Articolo*> Gestore::getArticoliPerRivista(int idx) const
+{
+    Base* ptrRivista = listRiviste [idx];
+    QList <Articolo*> listArticoliDiRivista;
+    for(Articolo* ptr : listArticoli)
+        if(ptr->getEditorePubblicato() == ptrRivista)
+            listArticoliDiRivista.push_back(ptr);
+
+    return listArticoliDiRivista;
+}
+
+bool compara2(Articolo* art1, Articolo* art2)
+{
+    if(art1->getPrezzo() < art2->getPrezzo())
+        return true;
+
+    return false;
+}
+
+const QList <Articolo*> Gestore::getArticoliPerRivistaSorted(int idx) const
+{
+    auto listArticoliDiRivista = getArticoliPerRivista(idx);
+    std::stable_sort(listArticoliDiRivista.begin(), listArticoliDiRivista.end(), compara2);
+    return listArticoliDiRivista;
+}
+
 
 
 

@@ -53,8 +53,17 @@ class MainWindow : public QMainWindow
             void on_tuttiArticoliButton_clicked();
             void on_mediaPrezziButton_clicked();
             void on_ordinatiArticoliButton_clicked();
+            void on_articoliInRivisteButton_clicked();
 
-    signals:
+            void on_cercaButton_clicked();
+
+            void on_tuttiArticoliRivistaButton_clicked();
+
+            void on_guadagnoRivistaButton_clicked();
+
+            void on_articoliOrdinatiButton_clicked();
+
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
@@ -64,7 +73,11 @@ class MainWindow : public QMainWindow
             Gestore gestore;
             void hide();
             void hide2();
+            void hide3();
+            void disattivaRadioButton();
             void mostraTuttiAutori();
+
+            void mostraTutteRiviste();
             void svuotaLineEdit();
 };
 

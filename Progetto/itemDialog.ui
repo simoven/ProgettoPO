@@ -363,6 +363,9 @@ QPlainTextEdit {
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
        </property>
+       <property name="maximum">
+        <number>20000</number>
+       </property>
       </widget>
      </item>
      <item row="6" column="0">
@@ -382,6 +385,9 @@ QPlainTextEdit {
        </property>
        <property name="buttonSymbols">
         <enum>QAbstractSpinBox::NoButtons</enum>
+       </property>
+       <property name="maximum">
+        <double>999.990000000000009</double>
        </property>
       </widget>
      </item>

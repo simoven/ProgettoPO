@@ -87,6 +87,19 @@ void MainWindow::mostraTuttiAutori()
     }
 }
 
+void MainWindow::disattivaRadioButton()
+{
+    //Devo fare così altrimenti i bottoni rimangono attivati se cambio pagina
+    ui->articoliInRivisteButton->setAutoExclusive(false); ui->articoliInRivisteButton->setChecked(false); ui->articoliInRivisteButton->setAutoExclusive(true);
+    ui->tuttiArticoliButton->setAutoExclusive(false); ui->tuttiArticoliButton->setChecked(false); ui->tuttiArticoliButton->setAutoExclusive(true);
+    ui->mediaPrezziButton->setAutoExclusive(false); ui->mediaPrezziButton->setChecked(false); ui->mediaPrezziButton->setAutoExclusive(true);
+    ui->ordinatiArticoliButton->setAutoExclusive(false); ui->ordinatiArticoliButton->setChecked(false); ui->ordinatiArticoliButton->setAutoExclusive(true);
+
+    ui->tuttiArticoliRivistaButton->setAutoExclusive(false); ui->tuttiArticoliRivistaButton->setChecked(false); ui->tuttiArticoliRivistaButton->setAutoExclusive(true);
+    ui->guadagnoRivistaButton->setAutoExclusive(false); ui->guadagnoRivistaButton->setChecked(false); ui->guadagnoRivistaButton->setAutoExclusive(true);
+    ui->articoliOrdinatiButton->setAutoExclusive(false); ui->articoliOrdinatiButton->setChecked(false); ui->articoliOrdinatiButton->setAutoExclusive(true);
+}
+
 void MainWindow::on_SezioneA_clicked()
 {
     ui->mainStacked->setCurrentWidget(ui->pageMain);
@@ -94,6 +107,7 @@ void MainWindow::on_SezioneA_clicked()
 
 void MainWindow::on_SezioneB_clicked()
 {
+    disattivaRadioButton();
     ui->mainStacked->setCurrentWidget(ui->pageMetodiAutore);
     mostraTuttiAutori();
     hide2();
@@ -101,7 +115,10 @@ void MainWindow::on_SezioneB_clicked()
 
 void MainWindow::on_SezioneC_clicked()
 {
+    disattivaRadioButton();
     ui->mainStacked->setCurrentWidget(ui->pageMetodiRivista);
+    mostraTutteRiviste();
+    hide3();
 }
 
 //Definisco cosa mostrare in base al radio button
@@ -408,8 +425,17 @@ void MainWindow::on_eseguiButton_clicked()
             listArticoli = gestore.getArticoliPerAutoreSorted(idxChecked);
             for(int i = 0; i < listArticoli.size(); i++)
             {
-                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "     " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "      " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
                 ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
+            }
+        }
+        else if(ui->articoliInRivisteButton->isChecked())
+        {
+            QList <Base*> listRivistePubbicate = gestore.getRivisteNonPubblicateDaAutore(idxChecked);
+            for(int i = 0; i < listRivistePubbicate.size(); i++)
+            {
+                ui->dinamicListWidget->addItem(listRivistePubbicate [i]->getNome() + "      " + QString::number(listRivistePubbicate [i]->getData().year()));
+                ui->dinamicListWidget->item(i)->setIcon(QIcon(":res/RivistaColor.png"));
             }
         }
         else
@@ -449,4 +475,116 @@ void MainWindow::on_ordinatiArticoliButton_clicked()
     ui->dinamicLabel->setVisible(true);
     ui->dinamicLabel->setText("Articoli ordinati dell'autore selezionato");
     ui->dinamicListWidget->setVisible(true);
+}
+
+void MainWindow::on_articoliInRivisteButton_clicked()
+{
+    hide2();
+    ui->dinamicLabel->setVisible(true);
+    ui->dinamicLabel->setText("Riviste in cui l'autore non ha pubblicato articoli");
+    ui->dinamicListWidget->setVisible(true);
+}
+
+
+
+//Sezione Riviste
+void MainWindow::mostraTutteRiviste()
+{
+    ui->tutteRivisteListWidget->clear();
+    auto listTutteRiviste = gestore.getRiviste();
+    for(int i = 0; i < listTutteRiviste.size(); i++)
+    {
+        ui->tutteRivisteListWidget->addItem(listTutteRiviste [i]->getNome() + "      " + QString::number(listTutteRiviste [i]->getData().year()));
+        ui->tutteRivisteListWidget->item(i)->setIcon(QIcon(":res/RivistaColor.png"));
+        ui->tutteRivisteListWidget->item(i)->setCheckState(Qt::Unchecked);
+    }
+}
+
+void MainWindow::on_cercaButton_clicked()
+{
+    ui->dinamicListWidgetRivista->clear();
+
+    //Cerco la rivista che è stata selezionata, se piu' riviste sono state selezionate, prendo quella piu' in alto
+    int idxChecked = -1;
+    for(int i = 0; i < ui->tutteRivisteListWidget->count(); i++)
+    {
+        if(ui->tutteRivisteListWidget->item(i)->checkState() == Qt::Checked)
+        {
+            idxChecked = i;
+            break;
+        }
+    }
+
+    if(idxChecked != -1)
+    {
+        auto listArticoliDiRivista = gestore.getArticoliPerRivista(idxChecked);
+
+        if(ui->tuttiArticoliRivistaButton->isChecked())
+        {
+            for(int i = 0; i < listArticoliDiRivista.size(); i++)
+            {
+                ui->dinamicListWidgetRivista->addItem(listArticoliDiRivista [i]->getTitolo() + "     " + QString::number(listArticoliDiRivista [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidgetRivista->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
+            }
+        }
+        else if(ui->guadagnoRivistaButton->isChecked())
+        {
+            double guadagno = 0;
+            int anno = gestore.getRiviste() [idxChecked]->getData().year();
+            ui->annoSpinBox->setValue(anno);
+
+            for(Articolo* art : listArticoliDiRivista)
+                guadagno += art->getPrezzo();
+
+            ui->guadagnoLineEdit->setText(QString::number(guadagno));
+        }
+        else if(ui->articoliOrdinatiButton->isChecked())
+        {
+            QList <Articolo*> listArticoliOrdinati = gestore.getArticoliPerRivistaSorted(idxChecked);
+            for(int i = 0; i < listArticoliOrdinati.size(); i++)
+            {
+                ui->dinamicListWidgetRivista->addItem(listArticoliOrdinati [i]->getTitolo() + "      " + QString::number(listArticoliOrdinati [i]->getPrezzo()) + " €");
+                ui->dinamicListWidgetRivista->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
+            }
+        }
+        else
+        {
+            QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
+            msg.exec();
+        }
+
+    }
+}
+
+void MainWindow::hide3()
+{
+    ui->guadagnoLabel->setVisible(false); ui->guadagnoLineEdit->setVisible(false); ui->guadagnoLineEdit->setReadOnly(true);
+    ui->annoLabel->setVisible(false); ui->annoSpinBox->setVisible(false); ui->annoSpinBox->setReadOnly(true);
+    ui->dinamicLabelRivista->setVisible(false);
+    ui->dinamicListWidgetRivista->setVisible(false); ui->dinamicListWidgetRivista->clear();
+}
+
+void MainWindow::on_tuttiArticoliRivistaButton_clicked()
+{
+    hide3();
+    ui->dinamicLabelRivista->setVisible(true);
+    ui->dinamicLabelRivista->setText("Tutti gli articoli pubblicati per la rivista ");
+    ui->dinamicListWidgetRivista->setVisible(true);
+}
+
+void MainWindow::on_guadagnoRivistaButton_clicked()
+{
+    hide3();
+    ui->guadagnoLabel->setVisible(true);
+    ui->guadagnoLineEdit->setVisible(true);
+    ui->annoLabel->setVisible(true);
+    ui->annoSpinBox->setVisible(true);
+}
+
+void MainWindow::on_articoliOrdinatiButton_clicked()
+{
+    hide3();
+    ui->dinamicLabelRivista->setVisible(true);
+    ui->dinamicLabelRivista->setText("Articoli ordinati pubblicati per la rivista ");
+    ui->dinamicListWidgetRivista->setVisible(true);
 }

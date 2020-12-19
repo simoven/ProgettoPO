@@ -45,6 +45,10 @@ class Gestore
 
         const QList <Articolo*> getArticoliPerAutore(int idx) const;
         const QList <Articolo*> getArticoliPerAutoreSorted(int idx) const;
+        const QList <Base*> getRivisteNonPubblicateDaAutore(int idx) const;
+
+        const QList <Articolo*> getArticoliPerRivista(int idx) const;
+        const QList <Articolo*> getArticoliPerRivistaSorted(int idx) const;
 };
 
 #endif // GESTORE_H
