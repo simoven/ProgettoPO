@@ -35,6 +35,10 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->conferenzeSimiliButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
     connect(ui->keywordButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
+
+    connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
+    connect(ui->tutteConferenzeListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
+    connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -66,6 +70,7 @@ void MainWindow::svuotaLineEdit()
 
 void MainWindow::hide()
 {
+    //Serve solo a nascondere gli elementi grafici
     ui->label1->setText(""); ui->lineEdit1->setVisible(false);
     ui->label2->setText(""); ui->lineEdit2->setVisible(false);
     ui->label3->setText(""); ui->lineEdit3->setVisible(false);
@@ -113,6 +118,7 @@ void MainWindow::on_SezioneA_clicked()
 
 void MainWindow::on_SezioneB_clicked()
 {
+    svuotaTutto();
     disattivaRadioButton();
     ui->mainStacked->setCurrentWidget(ui->pageMetodiAutore);
     mostraTuttiAutori();
@@ -121,6 +127,7 @@ void MainWindow::on_SezioneB_clicked()
 
 void MainWindow::on_SezioneC_clicked()
 {
+    svuotaTutto();
     disattivaRadioButton();
     ui->mainStacked->setCurrentWidget(ui->pageMetodiRivista);
     mostraTutteRiviste();
@@ -129,10 +136,22 @@ void MainWindow::on_SezioneC_clicked()
 
 void MainWindow::on_SezioneD_clicked()
 {
+    svuotaTutto();
     disattivaRadioButton();
     ui->dinamicLabelMisto->setText("");
     ui->mainStacked->setCurrentWidget(ui->pageMetodiMisti);
     mostraTutteConferenze();
+}
+
+void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
+{
+    QListWidget* ptrList = item->listWidget();
+    int idx = ptrList->row(item);
+    //Se clicco un elemento disattivo tutti gli altri
+
+    for(int i = 0; i < ptrList->count(); i++)
+        if(i != idx && ptrList->item(i)->checkState() == Qt::Checked)
+            ptrList->item(i)->setCheckState(Qt::Unchecked);
 }
 
 //Definisco cosa mostrare in base al radio button
@@ -208,6 +227,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
 
         if(gestore.aggiungiAutore(author))
         {
+            //Se l'autore è stato aggiunto con successo, modifico il listWidgetItem
             item->setText(author.getNome() + " " + author.getCognome());
             item->setIcon(QIcon(":/res/AutoreColor.png"));
             item->setCheckState(Qt::Unchecked);
@@ -221,7 +241,6 @@ void MainWindow::on_bottoneAggiungi_clicked()
         {
             QMessageBox error(QMessageBox::Warning, "Impossobile aggiungere", "Non ci sono autori e/o riviste/conferenze sufficienti");
             error.exec();
-
         }
         else
         {
@@ -318,7 +337,7 @@ void MainWindow::onWidgetClicked()
 void MainWindow::on_bottoneRimuovi_clicked()
 {
     //Quando premo il bottone rimuovi passo il puntatore della list widget attiva in quel momento
-    //Capisco qual è la lista attiva tramite il current widget dello stackedWidget
+    //Capisco qual è la lista attiva tramite il current widget dello stackedWidget, che restituisce la pagina attiva
 
     QListWidget* itm;
     if(ui->listStacked->currentWidget() == ui->widgetArticolo->parent())
@@ -363,7 +382,6 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
                 i--;
             }
         }
-
     }
     ui->bottoneRimuovi->setVisible(false);
 }
@@ -392,6 +410,15 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
     dialog.exec();
 }
 
+void MainWindow::svuotaTutto()
+{
+    ui->lineEditPrezzo->setText("");
+    ui->guadagnoLineEdit->setText("");
+    ui->annoSpinBox->setValue(0);
+    ui->dinamicListWidget->clear();
+    ui->dinamicListWidgetRivista->clear();
+    ui->dinamicListWidgetMisto->clear();
+}
 
 //Bottone esegui della pagina "Ricerca Autore"
 void MainWindow::on_eseguiButton_clicked()
@@ -417,6 +444,7 @@ void MainWindow::on_eseguiButton_clicked()
 
         if(ui->tuttiArticoliButton->isChecked())
         {
+            //Mostro tutti gli articoli di quell'autore
             for(int i = 0; i < listArticoli.size(); i++)
             {
                 ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "     " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
@@ -445,6 +473,7 @@ void MainWindow::on_eseguiButton_clicked()
         }
         else if(ui->articoliInRivisteButton->isChecked())
         {
+            //Prendo le riviste in cui un autore non ha pubblicato nulla
             QList <Base*> listRivistePubbicate = gestore.getRivisteNonPubblicateDaAutore(idxChecked);
             for(int i = 0; i < listRivistePubbicate.size(); i++)
             {
@@ -514,6 +543,7 @@ void MainWindow::mostraTutteRiviste()
     }
 }
 
+//Bottone Esegui della pagina "Ricerca Riviste"
 void MainWindow::on_cercaButton_clicked()
 {
     ui->dinamicListWidgetRivista->clear();
@@ -616,6 +646,7 @@ void MainWindow::mostraTutteConferenze()
     }
 }
 
+//Bottone Esegui della pagina "Misto"
 void MainWindow::on_eseguiButtonMisto_clicked()
 {
     ui->dinamicListWidgetMisto->clear();
@@ -658,7 +689,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
         ui->dinamicLabelMisto->setText("Keyword la cui somma degli articoli porta al guadagno piu' alto");
         auto listTutteKeyword = gestore.getTutteKeyword();
         auto listGuadagnoPerKeyword = gestore.getGuadagnoPerKeyword(listTutteKeyword);
-        int max = -1;
+        double max = -1;
 
         for(double val : listGuadagnoPerKeyword)
             if(val > max)
@@ -669,8 +700,8 @@ void MainWindow::on_eseguiButtonMisto_clicked()
         {
             if(listGuadagnoPerKeyword [i] == max)
             {
-                ui->dinamicListWidgetMisto->addItem(listTutteKeyword [i] + "      " + QString::number(listGuadagnoPerKeyword [i]) + " €");
-                ui->dinamicListWidgetMisto->item(idxList++)->setIcon(QIcon("res:/ArticoloColor.png"));
+                ui->dinamicListWidgetMisto->addItem("  Keyword:  " + listTutteKeyword [i] + "      " + QString::number(listGuadagnoPerKeyword [i]) + " €");
+                ui->dinamicListWidgetMisto->item(idxList++)->setIcon(QIcon(":/res/ArticoloColor.png"));
             }
         }
     }

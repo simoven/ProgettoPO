@@ -101,7 +101,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
         listArticoli.push_back(new Articolo(article));
     else
     {
-        //Controllo se l'articolo che sto modificando è nei correlati di qualche articolo, se si aggiorno il puntatore
+        //Controllo se l'articolo che sto modificando è nei correlati di qualche altro articolo, se si aggiorno il puntatore
         //Perchè' sto creando un nuovo articolo con i dati modificati, quindi il puntatore sarà diverso
         Articolo* nuovo = new Articolo(article);
         for(Articolo* ptr : listArticoli)
@@ -226,6 +226,7 @@ bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int id
 
 bool Gestore::rimuoviArticolo(int idx)
 {
+    //Controllo che l'articolo non sia correlato ad un altro articolo
     bool isCorrelato = false;
     for(Articolo* ptr : listArticoli)
         if(listArticoli [idx] != ptr)
@@ -320,6 +321,7 @@ const QList <Rivista*>& Gestore::getRiviste() const
 
 const QList <Articolo*> Gestore::getArticoliPerAutore(int idx) const
 {
+    //Prendo tutti gli articoli pubblicati da un autore
     Autore* ptr = listAutori [idx];
     QList <Articolo*> nuovalistArticoli;
     for(int i = 0; i < listArticoli.size(); i++)
@@ -381,6 +383,7 @@ const QList <Base*> Gestore::getRivisteNonPubblicateDaAutore(int idx) const
 
 const QList <Articolo*> Gestore::getArticoliPerRivista(int idx) const
 {
+    //Prendi tutti gli articoli pubblicati per una rivista
     Base* ptrRivista = listRiviste [idx];
     QList <Articolo*> listArticoliDiRivista;
     for(Articolo* ptr : listArticoli)
@@ -460,6 +463,7 @@ const QList <QString> Gestore::getKeywordConferenzaAt(int idx) const
 
 bool Gestore::areSimilar(const QList<QString> &listaKeyword1, const QList<QString> &listaKeyword2) const
 {
+    //Controllo se le due liste di keyword sono simili
     QList <QString> keywordTotali = listaKeyword1;
 
     for(QString key : listaKeyword2)

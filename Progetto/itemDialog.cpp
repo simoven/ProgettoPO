@@ -4,6 +4,8 @@
 itemDialog::itemDialog(int idx, classType tp, Gestore* ptr2, QListWidgetItem* itm, QWidget *parent) : QDialog(parent), ui(new Ui::itemDialog),
   author(nullptr), paper(nullptr), conference(nullptr), article(nullptr)
 {
+    //idx è l'indice dell'elemento cliccato nella listWidget
+    //listItem punta direttamente al listWidgetItem
     ui->setupUi(this);
     hide();
     listItem = itm;
@@ -78,6 +80,7 @@ void itemDialog::hide()
 
 void itemDialog::showAutore()
 {
+    //Riempio i vari elementi grafici
     ui->itmLabel1->setText("Nome"); ui->itmLineEdit1->setText(author->getNome()); ui->itmLineEdit1->setVisible(true);
     ui->itmLabel2->setText("Cognome"); ui->itmLineEdit2->setText(author->getCognome()); ui->itmLineEdit2->setVisible(true);
     ui->itmLabel3->setText("Identificativo"); ui->itmLineEdit3->setText(author->getIdentificativo()); ui->itmLineEdit3->setReadOnly(true);
@@ -88,49 +91,6 @@ void itemDialog::showAutore()
     ui->itmPlainText->setVisible(true);
     for(int i = 0; i < author->getAfferenze().size(); i++)
         ui->itmPlainText->appendPlainText(author->getAfferenze()[i]);
-}
-
-
-void itemDialog::riempiLista(int option)
-{
-    ui->listWidget->clear();
-    ui->itmPlainText->setPlainText("");
-    Articolo* ptrArt = ptrGestore->getArticoli() [index];
-    if(option == 0) //Autori correlati
-    {
-        auto listAutori = ptrArt->getAutori();
-        auto tuttiAutori = ptrGestore->getAutori();
-        for(int i = 0; i < tuttiAutori.size(); i++)
-        {
-            ui->listWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
-            if(listAutori.contains(tuttiAutori [i]))
-                ui->listWidget->item(i)->setCheckState(Qt::Checked);
-            else
-                ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
-        }
-    }
-    else //Articoli correlati
-    {
-        auto listArticoli = ptrArt->getCorrelati();
-        auto tuttiArticoli = ptrGestore->getArticoli();
-        int contaElem = 0;
-        for(int i = 0; i < tuttiArticoli.size(); i++)
-        {
-            //Controllo prima di non aggiungere l'articolo a se stesso
-            if(i != index)
-            {
-                ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
-
-                if(listArticoli.contains(tuttiArticoli [i]))
-                    ui->listWidget->item(contaElem)->setCheckState(Qt::Checked);
-                else
-                    ui->listWidget->item(contaElem)->setCheckState(Qt::Unchecked);
-
-                contaElem++;
-            }
-        }
-
-    }
 }
 
 void itemDialog::showArticolo()
@@ -150,7 +110,7 @@ void itemDialog::showArticolo()
     ui->itmLabel5->setText("Pagine"); ui->itmSpinBox->setValue(article->getNumPagine()); ui->itmSpinBox->setVisible(true);
     ui->itmLabel6->setText("Prezzo"); ui->itmDoubleSpin->setValue(article->getPrezzo()); ui->itmDoubleSpin->setVisible(true);
 
-    //Mostro le keyword nel line edit
+    //Mostro le keyword dell'articolo nel line edit
     QString text = "";
     for(int i = 0; i < article->getKeyword().size(); i++)
     {
@@ -226,6 +186,51 @@ void itemDialog::showRivista()
 }
 
 
+void itemDialog::riempiLista(int option)
+{
+    //Questo serve a riempire la listWidget con gli autori o articoli correlati, in base a cosa ho cliccato
+    ui->listWidget->clear();
+    ui->itmPlainText->setPlainText("");
+
+    if(option == 0) //Autori correlati
+    {
+        auto listAutori = article->getAutori();
+        auto tuttiAutori = ptrGestore->getAutori();
+        for(int i = 0; i < tuttiAutori.size(); i++)
+        {
+            ui->listWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
+            if(listAutori.contains(tuttiAutori [i]))
+                ui->listWidget->item(i)->setCheckState(Qt::Checked);
+            else
+                ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
+        }
+    }
+    else //Articoli correlati
+    {
+        auto listArticoli = article->getCorrelati();
+        auto tuttiArticoli = ptrGestore->getArticoli();
+        int contaElem = 0;
+        for(int i = 0; i < tuttiArticoli.size(); i++)
+        {
+            //Controllo prima di non aggiungere l'articolo a se stesso
+            if(i != index)
+            {
+                ui->listWidget->addItem(tuttiArticoli [i]->getTitolo());
+
+                if(listArticoli.contains(tuttiArticoli [i]))
+                    ui->listWidget->item(contaElem)->setCheckState(Qt::Checked);
+                else
+                    ui->listWidget->item(contaElem)->setCheckState(Qt::Unchecked);
+
+                contaElem++;
+            }
+        }
+    }
+}
+
+
+
+
 void itemDialog::on_itmCombo4_currentIndexChanged(int index)
 {
     if(type == cArticolo)
@@ -273,9 +278,10 @@ void itemDialog::on_bottoneModifica_clicked()
                 articleTmp.setEditorePubblicato(ptrGestore->getConferenze()[indexEditor - 1]);
         }
 
+
         if(ui->itmCombo4->currentIndex() == 0) // prendo autori nella list widget e vedo a chi sono correlato
         {
-            articleTmp.setListCorrelati(ptrGestore->getArticoli() [index]->getCorrelati());
+            articleTmp.setListCorrelati(article->getCorrelati());
             for(int i = 0; i < ui->listWidget->count(); i++)
             {
                 if(ui->listWidget->item(i)->checkState() == Qt::Checked)
@@ -284,7 +290,7 @@ void itemDialog::on_bottoneModifica_clicked()
         }
         else // prendo articoli nella list widget e vedo a chi sono correlato
         {
-            articleTmp.setListAutori(ptrGestore->getArticoli() [index]->getAutori());
+            articleTmp.setListAutori(article->getAutori());
             int correctIdx = 0;
             for(int i = 0; i < ui->listWidget->count(); i++)
             {

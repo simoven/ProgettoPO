@@ -63,7 +63,9 @@ class MainWindow : public QMainWindow
 
             void on_eseguiButtonMisto_clicked();
 
-signals:
+            void disattivaElementiChecked(QListWidgetItem*);
+
+    signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
@@ -74,6 +76,7 @@ signals:
             void hide();
             void hide2();
             void hide3();
+            void svuotaTutto();
             void disattivaRadioButton();
 
             void mostraTuttiAutori();
