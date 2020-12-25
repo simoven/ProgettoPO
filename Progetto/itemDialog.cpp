@@ -323,7 +323,7 @@ void itemDialog::on_bottoneModifica_clicked()
 
 
         if(ptrGestore->aggiungiConferenza(tmp, false, index))
-            listItem->setText(tmp.getNome());
+            listItem->setText(tmp.getNome() + "      " + QString::number(tmp.getData().year()));
     }
     else
     {
@@ -336,7 +336,7 @@ void itemDialog::on_bottoneModifica_clicked()
 
 
         if(ptrGestore->aggiungiRivista(temp, false, index))
-                listItem->setText(paper->getNome());
+                listItem->setText(temp.getNome() + "      " + QString::number(temp.getData().year()));
     }
 
     done(0);

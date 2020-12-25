@@ -20,7 +20,7 @@ class Autore
         void setNome(QString name);
         void setIdentificativo(int number);
         void setCognome(QString surname);
-        void addAfferenze(QString workplace);
+        void addAfferenze(QString workplace, char separator = '\n');
 
         bool operator==(const Autore& A) const;
 };

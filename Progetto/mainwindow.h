@@ -64,8 +64,12 @@ class MainWindow : public QMainWindow
             void on_eseguiButtonMisto_clicked();
 
             void disattivaElementiChecked(QListWidgetItem*);
+            void on_pushButton_clicked();
+            void on_leggiButton_clicked();
 
-    signals:
+            void on_pushButton_2_clicked();
+
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
@@ -83,6 +87,8 @@ class MainWindow : public QMainWindow
             void mostraTutteRiviste();
             void mostraTutteConferenze();
             void svuotaLineEdit();
+
+            bool inputAutoreValido(Articolo&, QString, QString);
 };
 
 #endif // MAINWINDOW_H

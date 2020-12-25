@@ -10,19 +10,19 @@ int Conferenza::getPartecipanti() const { return numPartecipanti; }
 
 void Conferenza::setLuogo(QString place) { luogo = place; }
 
-void Conferenza::addOrganizzatore(QString organizzatori)
+void Conferenza::addOrganizzatore(QString organizzatori, char separator)
 {
     if(organizzatori.size() != 0)
     {
-        if(organizzatori.back() != '\n')
-        organizzatori += '\n';
+        if(organizzatori.back() != separator)
+        organizzatori += separator;
 
         //Tokenizzo gli organizzatori
         int len = 0;
         int idx = 0;
         for(int i = 0; i < organizzatori.length(); i++)
         {
-            if(organizzatori [i] == '\n')
+            if(organizzatori [i] == separator)
             {
                 listOrganizzatori.push_back(organizzatori.mid(idx, len));
                 idx = i+1;

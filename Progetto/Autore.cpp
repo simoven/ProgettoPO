@@ -16,19 +16,19 @@ void Autore::setIdentificativo(int number) { identificativo = QString::number(nu
 
 void Autore::setCognome(QString surname) { cognome = surname; }
 
-void Autore::addAfferenze(QString workplace)
+void Autore::addAfferenze(QString workplace, char separator)
 {
     if(workplace.size() != 0)
     {
-        if(workplace.back() != '\n')
-            workplace += '\n';
+        if(workplace.back() != separator)
+            workplace += separator;
 
         int len = 0;
         int idx = 0;
         //Tokenizzo il plain text
         for(int i = 0; i < workplace.length(); i++)
         {
-            if(workplace [i] == '\n')
+            if(workplace [i] == separator)
             {
                 afferenze.push_back(workplace.mid(idx, len));
                 idx = i+1;

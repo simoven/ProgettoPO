@@ -19,7 +19,7 @@ class Conferenza : public Base
         int getPartecipanti() const;
 
         void setLuogo(QString place);
-        void addOrganizzatore(QString man);
+        void addOrganizzatore(QString man, char separator = '\n');
         void setPartecipanti(int partecipanti);
 
         bool operator==(const Conferenza& C) const;

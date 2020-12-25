@@ -39,21 +39,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
     connect(ui->tutteConferenzeListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
     connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
+
+    connect(ui->articoloLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
+    connect(ui->autoreLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
+    connect(ui->rivistaLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
+    connect(ui->conferenzaLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
 }
 
 MainWindow::~MainWindow()
 {
-    for(int i = 0; i < ui->widgetArticolo->count(); i++)
-        delete ui->widgetArticolo->item(i);
-
-    for(int i = 0; i < ui->widgetAutore->count(); i++)
-        delete ui->widgetAutore->item(i);
-
-    for(int i = 0; i < ui->widgetRivista->count(); i++)
-        delete ui->widgetRivista->item(i);
-
-    for(int i = 0; i < ui->widgetConferenza->count(); i++)
-        delete ui->widgetConferenza->item(i);
+    ui->widgetArticolo->clear();
+    ui->widgetAutore->clear();
+    ui->widgetConferenza->clear();
+    ui->widgetRivista->clear();
 
     delete ui;
 }
@@ -141,6 +139,12 @@ void MainWindow::on_SezioneD_clicked()
     ui->dinamicLabelMisto->setText("");
     ui->mainStacked->setCurrentWidget(ui->pageMetodiMisti);
     mostraTutteConferenze();
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    ui->listWidgetRecenti->clear();
+    ui->mainStacked->setCurrentWidget(ui->pageFileInput);
 }
 
 void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
@@ -378,7 +382,7 @@ void MainWindow::onRimuoviItem(QListWidget* itm)
 
             if(deleted)
             {
-                delete itm->takeItem(i);
+                delete itm->item(i);
                 i--;
             }
         }
@@ -715,7 +719,263 @@ void MainWindow::on_eseguiButtonMisto_clicked()
 
 
 
+QList <QString> tokenizer(QString stringIniziale, char separator = '\n')
+{
+    if(stringIniziale.back() != separator)
+        stringIniziale += separator;
 
+    QList <QString> tokenizzata;
+    int start = 0;
+    int len = 0;
+    for(int i = 0; i < stringIniziale.length(); i++)
+    {
+        if(stringIniziale [i] == separator)
+        {
+            tokenizzata.push_back(stringIniziale.mid(start, len));
+            start = i+1;
+            len = 0;
+        }
+        else
+            len++;
+    }
 
+    tokenizzata.removeAll("");
+    return tokenizzata;
+}
 
+bool controlloCheck(QList <QString>& tokenizzata, int nParametri)
+{
+    //nParametri è pari al numero di dati che ha un autore/conferenza ... a cui va aggiunto il "---" finale
+    if(tokenizzata.size() >= (nParametri + 1) && tokenizzata [0].contains("---"))
+    {
+        tokenizzata.erase(tokenizzata.begin());
+        return true;
+    }
 
+    return false;
+}
+
+bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, QString nomePubblicato)
+{
+    //Questa funzione serve a controllare che i nomi degli autori e della conferenza/rivista di un articolo esistano
+    QList <QString> listaNomiAutori = tokenizer(nomiAutori, ',');
+    QList <Autore*> listaPuntatoriAutore;
+    Base* ptrEditore = nullptr;
+    for(int i = 0; i < listaNomiAutori.size(); i++)
+    {
+        for(Autore* ptrAutore : gestore.getAutori())
+        {
+            if((ptrAutore->getNome() + " " + ptrAutore->getCognome()).toLower() == listaNomiAutori [i].toLower())
+            {
+                listaPuntatoriAutore.push_back(ptrAutore);
+                break;
+            }
+        }
+    }
+
+    for(Base* ptrBase : gestore.getConferenze())
+        if(ptrBase->getNome().toLower() == nomePubblicato.toLower())
+            ptrEditore = ptrBase;
+
+    for(Base* ptrBase : gestore.getRiviste())
+        if(ptrBase->getNome().toLower() == nomePubblicato.toLower())
+            ptrEditore = ptrBase;
+
+    if(listaPuntatoriAutore.size() == listaNomiAutori.size() && ptrEditore != nullptr)
+    {
+        nuovoArticolo.setListAutori(listaPuntatoriAutore);
+        nuovoArticolo.setEditorePubblicato(ptrEditore);
+        return true;
+    }
+
+    return false;
+
+}
+
+QDate getDataFromString(QString dateString)
+{
+    int day = 0, month = 0, year = 0;
+    day = dateString.mid(0,2).toInt();
+    month = dateString.mid(3,2).toInt();
+    year = dateString.mid(6,4).toInt();
+
+    return QDate(year, month, day);
+}
+
+//Bottone leggi della sezione File
+void MainWindow::on_leggiButton_clicked()
+{
+    QString path = ui->percorsoLineEdit->text();
+
+    QFile file(path);
+
+    //Apro il file in read only
+    if(!file.open(QFile::ReadOnly | QFile::Text))
+    {
+        QMessageBox msg(QMessageBox::Warning, "Errore", "Impossibile aprire il file");
+        msg.exec();
+        return;
+    }
+
+    QTextStream input(&file);
+    QString testo = input.readAll();
+
+    //Tokenizzo ogni linea del file
+    QList <QString> tokenizzata = tokenizer(testo);
+    QListWidgetItem* itemTemp;
+    QListWidgetItem* item;
+    bool check = true;
+
+    if(ui->autoreLeggiButton->isChecked())
+    {
+        while(check)
+        {
+            //Prendo dalla lista di tokenizzati i vari dati che mi servono, che saranno sempre nelle prime posizioni perché dopo rimuovo i dati inseriti
+            Autore nuovo;
+            nuovo.setNome(tokenizzata [0]);
+            nuovo.setCognome(tokenizzata [1]);
+            nuovo.addAfferenze(tokenizzata [2], ',');
+            if(gestore.aggiungiAutore(nuovo))
+            {
+                item = new QListWidgetItem;
+                itemTemp = new QListWidgetItem;
+
+                item->setText(nuovo.getNome() + " " + nuovo.getCognome());
+                item->setIcon(QIcon(":/res/AutoreColor.png"));
+                item->setCheckState(Qt::Unchecked);
+                ui->widgetAutore->addItem(item);
+
+                itemTemp->setText(item->text());
+                itemTemp->setIcon(item->icon());
+                ui->listWidgetRecenti->addItem(itemTemp);
+            }
+
+            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 3);
+            check = controlloCheck(tokenizzata, 3);
+        }
+    }
+    else if(ui->articoloLeggiButton->isChecked())
+    {
+        bool articoloNonInserito = false;
+        while(check)
+        {
+            Articolo nuovo;
+            nuovo.setTitolo(tokenizzata [0]);
+            nuovo.addKeyword(tokenizzata [1]);
+            nuovo.setNumPagine(tokenizzata [2].toInt());
+            nuovo.setPrezzo(tokenizzata [3].toDouble());
+            if(inputAutoreValido(nuovo, tokenizzata [4], tokenizzata [5]))
+            {
+                if(gestore.aggiungiArticolo(nuovo))
+                {
+                    item = new QListWidgetItem;
+                    itemTemp = new QListWidgetItem;
+
+                    item->setText(nuovo.getTitolo());
+                    item->setIcon(QIcon(":/res/ArticoloColor.png"));
+                    item->setCheckState(Qt::Unchecked);
+                    ui->widgetArticolo->addItem(item);
+
+                    itemTemp->setText(item->text());
+                    itemTemp->setIcon(item->icon());
+                    ui->listWidgetRecenti->addItem(itemTemp);
+                 }
+            }
+            else
+                articoloNonInserito = true;
+
+            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 6);
+            check = controlloCheck(tokenizzata, 6);
+        }
+
+        if(articoloNonInserito)
+        {
+            QMessageBox msg(QMessageBox::Warning, "Attenzione", "Uno o piu' articoli non sono stati inseriti");
+            msg.exec();
+        }
+    }
+    else if(ui->conferenzaLeggiButton->isChecked())
+    {
+        while(check)
+        {
+            Conferenza nuovo;
+            nuovo.setNome(tokenizzata [0]);
+            nuovo.setAcronimo(tokenizzata [1]);
+            nuovo.setLuogo(tokenizzata [2]);
+            nuovo.addOrganizzatore(tokenizzata [3], ',');
+            nuovo.setPartecipanti(tokenizzata [4].toInt());
+            nuovo.setData(getDataFromString(tokenizzata [5]));
+
+            if(gestore.aggiungiConferenza(nuovo))
+            {
+                item = new QListWidgetItem;
+                itemTemp = new QListWidgetItem;
+
+                item->setText(nuovo.getNome() + "      " + QString::number(nuovo.getData().year()));
+                item->setIcon(QIcon(":/res/ConferenzaColor.png"));
+                item->setCheckState(Qt::Unchecked);
+                ui->widgetConferenza->addItem(item);
+
+                itemTemp->setText(item->text());
+                itemTemp->setIcon(item->icon());
+                ui->listWidgetRecenti->addItem(itemTemp);
+            }
+
+            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 6);
+            check = controlloCheck(tokenizzata, 6);
+        }
+    }
+    else if(ui->rivistaLeggiButton->isChecked())
+    {
+        while(check)
+        {
+            Rivista nuovo;
+            nuovo.setNome(tokenizzata [0]);
+            nuovo.setAcronimo(tokenizzata [1]);
+            nuovo.setEditore(tokenizzata [2]);
+            nuovo.setVolume(tokenizzata [3].toInt());
+            nuovo.setData(getDataFromString(tokenizzata [4]));
+
+            if(gestore.aggiungiRivista(nuovo))
+            {
+                item = new QListWidgetItem;
+                itemTemp = new QListWidgetItem;
+
+                item->setText(nuovo.getNome() + "      " + QString::number(nuovo.getData().year()));
+                item->setIcon(QIcon(":/res/RivistaColor.png"));
+                item->setCheckState(Qt::Unchecked);
+                ui->widgetRivista->addItem(item);
+
+                itemTemp->setText(item->text());
+                itemTemp->setIcon(item->icon());
+                ui->listWidgetRecenti->addItem(itemTemp);
+            }
+
+            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 5);
+            check = controlloCheck(tokenizzata, 5);
+        }
+    }
+    else
+    {
+        QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
+        msg.exec();
+    }
+
+    file.flush();
+    file.close();
+}
+
+void MainWindow::on_pushButton_2_clicked()
+{
+    QString testo = "I dati devono essere scritti linea per linea e separati da --- per indicare un elemento diverso\n\n "
+                    "Ad esempio un File valido per un articolo è il seguente : \n\n"
+                    "Articolo1\nkeyword1,keyword2,keyword3\n"
+                    "10                                                  (numero pagine)"
+                    "\n18.90                                             (prezzo)"
+                    "\nautore rossi,autore verdi               (autori)"
+                    "\nconferenza12                                (per chi è stato pubblicato)"
+                    "\n---";
+
+    QMessageBox msg(QMessageBox::Information, "Formato Valido", testo);
+    msg.exec();
+}
