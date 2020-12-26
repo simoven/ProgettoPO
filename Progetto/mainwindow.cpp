@@ -409,9 +409,12 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
     else
         tipo = cRivista;
 
-    itemDialog dialog(idx, tipo, &gestore, item);
-    dialog.setModal(true);
-    dialog.exec();
+    if(idx != -1)
+    {
+        itemDialog dialog(idx, tipo, &gestore, item);
+        dialog.setModal(true);
+        dialog.exec();
+    }
 }
 
 
@@ -972,8 +975,8 @@ void MainWindow::on_leggiButton_clicked()
 
     if(elementoNonInserito)
     {
-        QMessageBox msg(QMessageBox::Warning, "Attenzione", "Uno o piu' elementi non sono stati inseriti perché già esistenti/"
-                                                            "alcuni campi non sono validi");
+        QMessageBox msg(QMessageBox::Warning, "Attenzione", "Uno o piu' elementi non sono stati inseriti perché già esistenti\n"
+                                                            "oppure alcuni campi non sono validi");
         msg.exec();
     }
 
@@ -993,5 +996,20 @@ void MainWindow::on_istruzioniButton_clicked()
                     "\n---";
 
     QMessageBox msg(QMessageBox::Information, "Formato Valido", testo);
+    msg.exec();
+}
+
+void MainWindow::on_infoProgButton_clicked()
+{
+    QString text = "Progetto singolo a cura di : Simone Ventrici\n"
+                   "Matricola : 209714\n\n"
+                   "Metodi implementati : \n"
+                   "Sezione B : 1, 4, 5\n"
+                   "Sezione C : 3, 5, 6\n"
+                   "Sezione D : 4, 6\n"
+                   "Sezione E : 2\n"
+                   "Sezione F : 4, 5";
+
+    QMessageBox msg(QMessageBox::Information, "Informazioni sul progetto", text);
     msg.exec();
 }

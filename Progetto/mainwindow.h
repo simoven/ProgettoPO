@@ -69,7 +69,9 @@ class MainWindow : public QMainWindow
 
             void on_istruzioniButton_clicked();
 
-    signals:
+            void on_infoProgButton_clicked();
+
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 

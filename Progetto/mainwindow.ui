@@ -90,6 +90,16 @@ QPlainTextEdit {
 	border-radius : 6px;
 	color : white;
 	background-color : rgb(136, 138, 133);
+}
+
+QListWidget::indicator {
+	border :  1px solid white;
+	border-radius : 3px;
+}
+
+QListWidget::indicator:checked {
+	border : none;
+	image: url(:/res/check2.png);
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -204,10 +214,32 @@ QPlainTextEdit {
         </property>
        </spacer>
       </item>
+      <item>
+       <widget class="QPushButton" name="infoProgButton">
+        <property name="minimumSize">
+         <size>
+          <width>110</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Info Progetto</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </item>
     <item>
      <widget class="Line" name="line">
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
       <property name="orientation">
        <enum>Qt::Vertical</enum>
       </property>
@@ -216,7 +248,7 @@ QPlainTextEdit {
     <item>
      <widget class="QStackedWidget" name="mainStacked">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="pageMain">
        <property name="styleSheet">
