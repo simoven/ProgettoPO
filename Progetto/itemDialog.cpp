@@ -230,13 +230,11 @@ void itemDialog::riempiLista(int option)
 
 
 
-
 void itemDialog::on_itmCombo4_currentIndexChanged(int index)
 {
     if(type == cArticolo)
         riempiLista(index);
 }
-
 
 
 void itemDialog::on_bottoneModifica_clicked()
@@ -251,7 +249,7 @@ void itemDialog::on_bottoneModifica_clicked()
         temp.setIdentificativo(x.toInt());
 
 
-        if(ptrGestore->aggiungiAutore(temp, false, index, false))
+        if(ptrGestore->aggiungiAutore(temp, true, false, index, false))
             listItem->setText(temp.getNome() + " " + temp.getCognome());
 
     }
@@ -305,7 +303,7 @@ void itemDialog::on_bottoneModifica_clicked()
             }
         }
 
-       if(ptrGestore->aggiungiArticolo(articleTmp, false, index, false))
+       if(ptrGestore->aggiungiArticolo(articleTmp, true, false, index, false))
             listItem->setText(articleTmp.getTitolo());
        else
            return;
@@ -322,7 +320,7 @@ void itemDialog::on_bottoneModifica_clicked()
         tmp.addOrganizzatore(ui->itmPlainText->toPlainText());
 
 
-        if(ptrGestore->aggiungiConferenza(tmp, false, index))
+        if(ptrGestore->aggiungiConferenza(tmp, true, false, index))
             listItem->setText(tmp.getNome() + "      " + QString::number(tmp.getData().year()));
     }
     else
@@ -335,10 +333,9 @@ void itemDialog::on_bottoneModifica_clicked()
         temp.setData(ui->calendarWidget->selectedDate());
 
 
-        if(ptrGestore->aggiungiRivista(temp, false, index))
+        if(ptrGestore->aggiungiRivista(temp, true, false, index))
                 listItem->setText(temp.getNome() + "      " + QString::number(temp.getData().year()));
     }
-
     done(0);
 }
 

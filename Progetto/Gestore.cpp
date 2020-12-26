@@ -67,14 +67,16 @@ void showErroreCorrelato()
     msg.exec();
 }
 
-void showErroreNotValid()
+void showErroreNotValid(bool mostra)
 {
     //Significa che è già presente oppure alcuni campi sono vuoti
     QMessageBox msg(QMessageBox::Warning, "Impossibile aggiungere", "Elemento già presente oppure alcuni campi obbligatori sono vuoti");
-    msg.exec();
+
+    if(mostra)
+        msg.exec();
 }
 
-bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, int idx, bool increase)
+bool Gestore::aggiungiArticolo(const Articolo &article, bool mostraErrore, bool isNuovaAggiunta, int idx, bool increase)
 {
     bool valid = true;
     for(Articolo* it : listArticoli)
@@ -93,7 +95,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
 
     if(!valid)
     {
-        showErroreNotValid();
+        showErroreNotValid(mostraErrore);
         return false;
     }
 
@@ -128,7 +130,7 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool isNuovaAggiunta, in
     return true;
 }
 
-bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx, bool increase)
+bool Gestore::aggiungiAutore(const Autore &author, bool mostraErrore, bool isNuovaAggiunta, int idx, bool increase)
 {
     bool valid = true;
     for(Autore* it : listAutori)
@@ -140,7 +142,7 @@ bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx
 
     if(!valid)
     {
-        showErroreNotValid();
+        showErroreNotValid(mostraErrore);
         return false;
     }
 
@@ -162,7 +164,7 @@ bool Gestore::aggiungiAutore(const Autore &author, bool isNuovaAggiunta, int idx
     return true;
 }
 
-bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiunta, int idx)
+bool Gestore::aggiungiConferenza(const Conferenza &conference, bool mostraErrore, bool isNuovaAggiunta, int idx)
 {
     bool valid = true;
     for(Conferenza* it : listConferenze)
@@ -174,7 +176,7 @@ bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiu
 
     if(!valid)
     {
-        showErroreNotValid();
+        showErroreNotValid(mostraErrore);
         return false;
     }
 
@@ -193,7 +195,7 @@ bool Gestore::aggiungiConferenza(const Conferenza &conference, bool isNuovaAggiu
     return true;
 }
 
-bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int idx)
+bool Gestore::aggiungiRivista(const Rivista &paper, bool mostraErrore, bool isNuovaAggiunta, int idx)
 {
     bool valid = true;
     for(Rivista* it : listRiviste)
@@ -205,7 +207,7 @@ bool Gestore::aggiungiRivista(const Rivista &paper, bool isNuovaAggiunta, int id
 
     if(!valid)
     {
-        showErroreNotValid();
+        showErroreNotValid(mostraErrore);
         return false;
     }
 

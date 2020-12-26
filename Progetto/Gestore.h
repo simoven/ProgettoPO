@@ -28,10 +28,10 @@ class Gestore
         Gestore(const Gestore& G);
         Gestore& operator=(const Gestore& G);
 
-        bool aggiungiArticolo(const Articolo& article, bool isNuovaAggiunta = true, int idx = -1, bool increase = true);
-        bool aggiungiAutore(const Autore& author, bool isNuovaAggiunta = true, int idx = -1, bool increase = true);
-        bool aggiungiConferenza(const Conferenza& conference, bool isNuovaAggiunta = true, int idx = -1);
-        bool aggiungiRivista(const Rivista& paper, bool isNuovaAggiunta = true, int idx = -1);
+        bool aggiungiArticolo(const Articolo& article, bool mostraErrore = true, bool isNuovaAggiunta = true, int idx = -1, bool increase = true);
+        bool aggiungiAutore(const Autore& author, bool mostraErrore = true, bool isNuovaAggiunta = true, int idx = -1, bool increase = true);
+        bool aggiungiConferenza(const Conferenza& conference, bool mostraErrore = true, bool isNuovaAggiunta = true, int idx = -1);
+        bool aggiungiRivista(const Rivista& paper, bool mostraErrore = true, bool isNuovaAggiunta = true, int idx = -1);
 
         bool rimuoviArticolo(int idx);
         bool rimuoviAutore(int idx);

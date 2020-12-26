@@ -414,6 +414,8 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
     dialog.exec();
 }
 
+
+
 void MainWindow::svuotaTutto()
 {
     ui->lineEditPrezzo->setText("");
@@ -773,13 +775,20 @@ bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, 
         }
     }
 
-    for(Base* ptrBase : gestore.getConferenze())
-        if(ptrBase->getNome().toLower() == nomePubblicato.toLower())
-            ptrEditore = ptrBase;
+    QList <QString> tipoNomePubblicato = tokenizer(nomePubblicato, ',');
 
-    for(Base* ptrBase : gestore.getRiviste())
-        if(ptrBase->getNome().toLower() == nomePubblicato.toLower())
-            ptrEditore = ptrBase;
+    if(tipoNomePubblicato [0].toUpper() == "CF")          //Controllo nelle conferenze
+    {
+        for(Base* ptrBase : gestore.getConferenze())
+            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
+                ptrEditore = ptrBase;
+    }
+    else if(tipoNomePubblicato [0].toUpper() == "RV")         //Controllo nelle riviste
+    {
+        for(Base* ptrBase : gestore.getRiviste())
+            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
+                ptrEditore = ptrBase;
+    }
 
     if(listaPuntatoriAutore.size() == listaNomiAutori.size() && ptrEditore != nullptr)
     {
@@ -825,6 +834,7 @@ void MainWindow::on_leggiButton_clicked()
     QListWidgetItem* itemTemp;
     QListWidgetItem* item;
     bool check = true;
+    bool elementoNonInserito = false;
 
     if(ui->autoreLeggiButton->isChecked())
     {
@@ -835,7 +845,7 @@ void MainWindow::on_leggiButton_clicked()
             nuovo.setNome(tokenizzata [0]);
             nuovo.setCognome(tokenizzata [1]);
             nuovo.addAfferenze(tokenizzata [2], ',');
-            if(gestore.aggiungiAutore(nuovo))
+            if(gestore.aggiungiAutore(nuovo, false))
             {
                 item = new QListWidgetItem;
                 itemTemp = new QListWidgetItem;
@@ -849,6 +859,8 @@ void MainWindow::on_leggiButton_clicked()
                 itemTemp->setIcon(item->icon());
                 ui->listWidgetRecenti->addItem(itemTemp);
             }
+            else
+                elementoNonInserito = true;
 
             tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 3);
             check = controlloCheck(tokenizzata, 3);
@@ -856,7 +868,6 @@ void MainWindow::on_leggiButton_clicked()
     }
     else if(ui->articoloLeggiButton->isChecked())
     {
-        bool articoloNonInserito = false;
         while(check)
         {
             Articolo nuovo;
@@ -866,7 +877,7 @@ void MainWindow::on_leggiButton_clicked()
             nuovo.setPrezzo(tokenizzata [3].toDouble());
             if(inputAutoreValido(nuovo, tokenizzata [4], tokenizzata [5]))
             {
-                if(gestore.aggiungiArticolo(nuovo))
+                if(gestore.aggiungiArticolo(nuovo, false))
                 {
                     item = new QListWidgetItem;
                     itemTemp = new QListWidgetItem;
@@ -882,16 +893,10 @@ void MainWindow::on_leggiButton_clicked()
                  }
             }
             else
-                articoloNonInserito = true;
+                elementoNonInserito = true;
 
             tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 6);
             check = controlloCheck(tokenizzata, 6);
-        }
-
-        if(articoloNonInserito)
-        {
-            QMessageBox msg(QMessageBox::Warning, "Attenzione", "Uno o piu' articoli non sono stati inseriti");
-            msg.exec();
         }
     }
     else if(ui->conferenzaLeggiButton->isChecked())
@@ -906,7 +911,7 @@ void MainWindow::on_leggiButton_clicked()
             nuovo.setPartecipanti(tokenizzata [4].toInt());
             nuovo.setData(getDataFromString(tokenizzata [5]));
 
-            if(gestore.aggiungiConferenza(nuovo))
+            if(gestore.aggiungiConferenza(nuovo, false))
             {
                 item = new QListWidgetItem;
                 itemTemp = new QListWidgetItem;
@@ -920,6 +925,8 @@ void MainWindow::on_leggiButton_clicked()
                 itemTemp->setIcon(item->icon());
                 ui->listWidgetRecenti->addItem(itemTemp);
             }
+            else
+                elementoNonInserito = true;
 
             tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 6);
             check = controlloCheck(tokenizzata, 6);
@@ -936,7 +943,7 @@ void MainWindow::on_leggiButton_clicked()
             nuovo.setVolume(tokenizzata [3].toInt());
             nuovo.setData(getDataFromString(tokenizzata [4]));
 
-            if(gestore.aggiungiRivista(nuovo))
+            if(gestore.aggiungiRivista(nuovo, false))
             {
                 item = new QListWidgetItem;
                 itemTemp = new QListWidgetItem;
@@ -950,6 +957,8 @@ void MainWindow::on_leggiButton_clicked()
                 itemTemp->setIcon(item->icon());
                 ui->listWidgetRecenti->addItem(itemTemp);
             }
+            else
+                elementoNonInserito = true;
 
             tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 5);
             check = controlloCheck(tokenizzata, 5);
@@ -961,11 +970,18 @@ void MainWindow::on_leggiButton_clicked()
         msg.exec();
     }
 
+    if(elementoNonInserito)
+    {
+        QMessageBox msg(QMessageBox::Warning, "Attenzione", "Uno o piu' elementi non sono stati inseriti perché già esistenti/"
+                                                            "alcuni campi non sono validi");
+        msg.exec();
+    }
+
     file.flush();
     file.close();
 }
 
-void MainWindow::on_pushButton_2_clicked()
+void MainWindow::on_istruzioniButton_clicked()
 {
     QString testo = "I dati devono essere scritti linea per linea e separati da --- per indicare un elemento diverso\n\n "
                     "Ad esempio un File valido per un articolo è il seguente : \n\n"
@@ -973,7 +989,7 @@ void MainWindow::on_pushButton_2_clicked()
                     "10                                                  (numero pagine)"
                     "\n18.90                                             (prezzo)"
                     "\nautore rossi,autore verdi               (autori)"
-                    "\nconferenza12                                (per chi è stato pubblicato)"
+                    "\nCF,conferenza12                           (pubblicazione    Tipo,Nome)"
                     "\n---";
 
     QMessageBox msg(QMessageBox::Information, "Formato Valido", testo);

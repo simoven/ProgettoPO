@@ -216,7 +216,7 @@ QPlainTextEdit {
     <item>
      <widget class="QStackedWidget" name="mainStacked">
       <property name="currentIndex">
-       <number>4</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="pageMain">
        <property name="styleSheet">
@@ -841,7 +841,7 @@ QPushButton:hover{
               <item>
                <widget class="QRadioButton" name="tuttiArticoliRivistaButton">
                 <property name="text">
-                 <string>Mostra tutti gli articoli relativi alla rivista</string>
+                 <string>Mostra tutti gli articoli pubblicati per la rivista</string>
                 </property>
                </widget>
               </item>
