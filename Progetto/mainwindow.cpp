@@ -34,6 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->widgetConferenza, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(onWidgetDoubleClicked(QListWidgetItem*)));
 
     connect(ui->conferenzeSimiliButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
+    connect(ui->articoliPerConferenzaButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
     connect(ui->keywordButton, SIGNAL(clicked()), ui->dinamicListWidgetMisto, SLOT(clear()));
 
     connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
@@ -151,7 +152,7 @@ void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
 {
     QListWidget* ptrList = item->listWidget();
     int idx = ptrList->row(item);
-    //Se clicco un elemento disattivo tutti gli altri
+    //Se faccio check su ul elemento di una listWidget disattivo tutti gli altri
 
     for(int i = 0; i < ptrList->count(); i++)
         if(i != idx && ptrList->item(i)->checkState() == Qt::Checked)
@@ -456,7 +457,7 @@ void MainWindow::on_eseguiButton_clicked()
             //Mostro tutti gli articoli di quell'autore
             for(int i = 0; i < listArticoli.size(); i++)
             {
-                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "     " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "      " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
                 ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
             }
         }
@@ -476,7 +477,9 @@ void MainWindow::on_eseguiButton_clicked()
             listArticoli = gestore.getArticoliPerAutoreSorted(idxChecked);
             for(int i = 0; i < listArticoli.size(); i++)
             {
-                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "      " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "        " + QString::number(listArticoli [i]->getEditorePubblicato()->getData().year()) +
+                                               "        " + QString::number(listArticoli [i]->getPrezzo()) + " €");
+
                 ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
             }
         }
@@ -498,6 +501,7 @@ void MainWindow::on_eseguiButton_clicked()
     }
 }
 
+//Metodi per la grafica, servono a nascondere/settare gli elementi che servono
 void MainWindow::hide2()
 {
     ui->labelPrezzo->setVisible(false);
@@ -660,21 +664,22 @@ void MainWindow::on_eseguiButtonMisto_clicked()
 {
     ui->dinamicListWidgetMisto->clear();
 
+    int idxChecked = -1;
+    for(int i = 0; i < ui->tutteConferenzeListWidget->count(); i++)
+    {
+        if(ui->tutteConferenzeListWidget->item(i)->checkState() == Qt::Checked)
+        {
+            idxChecked = i;
+            break;
+        }
+    }
+
     if(ui->conferenzeSimiliButton->isChecked())
     {
-        int idxChecked = -1;
-        for(int i = 0; i < ui->tutteConferenzeListWidget->count(); i++)
-        {
-            if(ui->tutteConferenzeListWidget->item(i)->checkState() == Qt::Checked)
-            {
-                idxChecked = i;
-                break;
-            }
-        }
-
         if(idxChecked != -1)
         {
             ui->dinamicLabelMisto->setText("Conferenze simili a quella selezionata");
+            //Prendo la lista keyword della conferenza selezionata
             auto listKeywordConferenza = gestore.getKeywordConferenzaAt(idxChecked);
             int indexList = 0;
 
@@ -682,6 +687,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
             {
                 if(i != idxChecked)
                 {
+                    //Prendo la lista keyword della conferenza che sto verificando
                     auto listKeywordConferenzaSecondaria = gestore.getKeywordConferenzaAt(i);
                     if(gestore.areSimilar(listKeywordConferenza, listKeywordConferenzaSecondaria))
                     {
@@ -691,7 +697,21 @@ void MainWindow::on_eseguiButtonMisto_clicked()
                 }
             }
         }
+    }
+    else if(ui->articoliPerConferenzaButton->isChecked())
+    {
+        if(idxChecked != -1)
+        {
+            ui->dinamicLabel->setText("Articoli pubblicati per la conferenza");
+            auto listArticoliPerConferenza = gestore.getArticoliPerConferenza(idxChecked);
 
+            for(int i = 0; i < listArticoliPerConferenza.size(); i++)
+            {
+                ui->dinamicListWidgetMisto->addItem(listArticoliPerConferenza [i]->getTitolo() + "     " + QString::number(listArticoliPerConferenza [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidgetMisto->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
+            }
+
+        }
     }
     else if(ui->keywordButton->isChecked())
     {
@@ -778,6 +798,8 @@ bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, 
         }
     }
 
+    //Tokenizzo la linea in due parti, la prima contiene il tipo er cui viene pubblicato un articolo Rivista/Conferenza
+    //La seconda contiene il nome
     QList <QString> tipoNomePubblicato = tokenizer(nomePubblicato, ',');
 
     if(tipoNomePubblicato [0].toUpper() == "CF")          //Controllo nelle conferenze
@@ -813,6 +835,7 @@ QDate getDataFromString(QString dateString)
 
     return QDate(year, month, day);
 }
+
 
 //Bottone leggi della sezione File
 void MainWindow::on_leggiButton_clicked()
@@ -894,6 +917,8 @@ void MainWindow::on_leggiButton_clicked()
                     itemTemp->setIcon(item->icon());
                     ui->listWidgetRecenti->addItem(itemTemp);
                  }
+                else
+                    elementoNonInserito = true;
             }
             else
                 elementoNonInserito = true;

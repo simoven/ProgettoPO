@@ -71,7 +71,7 @@ class MainWindow : public QMainWindow
 
             void on_infoProgButton_clicked();
 
-signals:
+    signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 

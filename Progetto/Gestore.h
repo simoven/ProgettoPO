@@ -49,6 +49,7 @@ class Gestore
 
         const QList <Articolo*> getArticoliPerRivista(int idx) const;
         const QList <Articolo*> getArticoliPerRivistaSorted(int idx) const;
+        const QList <Articolo*> getArticoliPerConferenza(int idx) const;
 
         const QList <QString> getTutteKeyword() const;
         const QList <double> getGuadagnoPerKeyword(const QList <QString>& listaKeyword) const;

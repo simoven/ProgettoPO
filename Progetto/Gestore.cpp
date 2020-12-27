@@ -395,6 +395,17 @@ const QList <Articolo*> Gestore::getArticoliPerRivista(int idx) const
     return listArticoliDiRivista;
 }
 
+const QList <Articolo*> Gestore::getArticoliPerConferenza(int idx) const
+{
+    Base* ptrConferenza = listConferenze [idx];
+    QList <Articolo*> listArticoliDiConferenza;
+    for(Articolo* ptr : listArticoli)
+        if(ptr->getEditorePubblicato() == ptrConferenza)
+            listArticoliDiConferenza.push_back(ptr);
+
+    return listArticoliDiConferenza;
+}
+
 bool compara2(Articolo* art1, Articolo* art2)
 {
     if(art1->getPrezzo() < art2->getPrezzo())

@@ -248,7 +248,7 @@ QListWidget::indicator:checked {
     <item>
      <widget class="QStackedWidget" name="mainStacked">
       <property name="currentIndex">
-       <number>0</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="pageMain">
        <property name="styleSheet">
@@ -1118,6 +1118,13 @@ QPushButton:hover{
                <widget class="QRadioButton" name="conferenzeSimiliButton">
                 <property name="text">
                  <string>Mostra conferenze simili</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="articoliPerConferenzaButton">
+                <property name="text">
+                 <string>Mostra articoli pubblicati per la conferenza</string>
                 </property>
                </widget>
               </item>
