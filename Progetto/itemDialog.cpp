@@ -4,7 +4,7 @@
 itemDialog::itemDialog(int idx, classType tp, Gestore* ptr2, QListWidgetItem* itm, QWidget *parent) : QDialog(parent), ui(new Ui::itemDialog),
   author(nullptr), paper(nullptr), conference(nullptr), article(nullptr)
 {
-    //idx è l'indice dell'elemento cliccato nella listWidget
+    //index è l'indice dell'elemento cliccato nella listWidget
     //listItem punta direttamente al listWidgetItem
     ui->setupUi(this);
     hide();
@@ -192,7 +192,7 @@ void itemDialog::riempiLista(int option)
     ui->listWidget->clear();
     ui->itmPlainText->setPlainText("");
 
-    if(option == 0) //Autori correlati
+    if(option == 0) //Mostro gli autori
     {
         auto listAutori = article->getAutori();
         auto tuttiAutori = ptrGestore->getAutori();
@@ -205,7 +205,7 @@ void itemDialog::riempiLista(int option)
                 ui->listWidget->item(i)->setCheckState(Qt::Unchecked);
         }
     }
-    else //Articoli correlati
+    else //Mostro gli articoli correlati
     {
         auto listArticoli = article->getCorrelati();
         auto tuttiArticoli = ptrGestore->getArticoli();
@@ -262,8 +262,9 @@ void itemDialog::on_bottoneModifica_clicked()
         articleTmp.setPrezzo(ui->itmDoubleSpin->value());
         QString x = ui->itmLineEdit2->text();
         articleTmp.setIdentificativo(x.toInt());
-        int indexEditor = ui->itmComboBox->currentIndex();
 
+        int indexEditor = ui->itmComboBox->currentIndex();
+        //La combobox dice per chi è stato pubblicato l'articolo
 
         if(indexEditor == 0)
             articleTmp.setEditorePubblicato(nullptr);
@@ -277,6 +278,7 @@ void itemDialog::on_bottoneModifica_clicked()
         }
 
 
+        //Combo4 dice se sto mostrando la listWidget di autori o articoli correlati
         if(ui->itmCombo4->currentIndex() == 0) // prendo autori nella list widget e vedo a chi sono correlato
         {
             articleTmp.setListCorrelati(article->getCorrelati());
@@ -304,7 +306,7 @@ void itemDialog::on_bottoneModifica_clicked()
         }
 
        if(ptrGestore->aggiungiArticolo(articleTmp, true, false, index, false))
-            listItem->setText(articleTmp.getTitolo());
+            listItem->setText(articleTmp.getTitolo() + "        " + QString::number(articleTmp.getNumPagine()) + " pagine");
        else
            return;
 
@@ -334,7 +336,7 @@ void itemDialog::on_bottoneModifica_clicked()
 
 
         if(ptrGestore->aggiungiRivista(temp, true, false, index))
-                listItem->setText(temp.getNome() + "      " + QString::number(temp.getData().year()));
+            listItem->setText(temp.getNome() + "      " + QString::number(temp.getData().year()));
     }
     done(0);
 }

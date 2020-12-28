@@ -244,7 +244,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
     {
         if(gestore.getAutori().size() == 0 || (gestore.getConferenze().size() == 0 && gestore.getRiviste().size() == 0))
         {
-            QMessageBox error(QMessageBox::Warning, "Impossobile aggiungere", "Non ci sono autori e/o riviste/conferenze sufficienti");
+            QMessageBox error(QMessageBox::Warning, "Impossibile aggiungere", "Non ci sono autori e/o riviste/conferenze sufficienti");
             error.exec();
         }
         else
@@ -257,7 +257,7 @@ void MainWindow::on_bottoneAggiungi_clicked()
             article.setPrezzo(ui->doubleSpinBox->value());
             if(gestore.aggiungiArticolo(article))
             {
-                item->setText(article.getTitolo());
+                item->setText(article.getTitolo() + "        " + QString::number(article.getNumPagine()) + " pagine");
                 item->setIcon(QIcon(":/res/ArticoloColor.png"));
                 item->setCheckState(Qt::Unchecked);
                 ui->widgetArticolo->addItem(item);
@@ -435,7 +435,7 @@ void MainWindow::on_eseguiButton_clicked()
 {
     ui->dinamicListWidget->clear();
 
-    //Cerco l'autore che è stato selezionato, se piu' autori sono stati selezionati, prendo quello piu' in alto
+    //Cerco l'autore che è stato selezionato
     int idxChecked = -1;
     for(int i = 0; i < ui->tuttiAutoriListWidget->count(); i++)
     {
@@ -445,7 +445,6 @@ void MainWindow::on_eseguiButton_clicked()
             break;
         }
     }
-
 
     QList <Articolo*> listArticoli;
     if(idxChecked != -1)
@@ -457,7 +456,7 @@ void MainWindow::on_eseguiButton_clicked()
             //Mostro tutti gli articoli di quell'autore
             for(int i = 0; i < listArticoli.size(); i++)
             {
-                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "      " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidget->addItem(listArticoli [i]->getTitolo() + "       " + QString::number(listArticoli [i]->getNumPagine()) + " Pagine");
                 ui->dinamicListWidget->item(i)->setIcon(QIcon(":/res/ArticoloColor.png"));
             }
         }
@@ -489,7 +488,7 @@ void MainWindow::on_eseguiButton_clicked()
             QList <Base*> listRivistePubbicate = gestore.getRivisteNonPubblicateDaAutore(idxChecked);
             for(int i = 0; i < listRivistePubbicate.size(); i++)
             {
-                ui->dinamicListWidget->addItem(listRivistePubbicate [i]->getNome() + "      " + QString::number(listRivistePubbicate [i]->getData().year()));
+                ui->dinamicListWidget->addItem(listRivistePubbicate [i]->getNome() + "       " + QString::number(listRivistePubbicate [i]->getData().year()));
                 ui->dinamicListWidget->item(i)->setIcon(QIcon(":res/RivistaColor.png"));
             }
         }
@@ -501,7 +500,7 @@ void MainWindow::on_eseguiButton_clicked()
     }
 }
 
-//Metodi per la grafica, servono a nascondere/settare gli elementi che servono
+//Metodi per la grafica di Autore, servono a nascondere/settare gli elementi che servono
 void MainWindow::hide2()
 {
     ui->labelPrezzo->setVisible(false);
@@ -561,7 +560,7 @@ void MainWindow::on_cercaButton_clicked()
 {
     ui->dinamicListWidgetRivista->clear();
 
-    //Cerco la rivista che è stata selezionata, se piu' riviste sono state selezionate, prendo quella piu' in alto
+    //Cerco la rivista che è stata selezionata
     int idxChecked = -1;
     for(int i = 0; i < ui->tutteRivisteListWidget->count(); i++)
     {
@@ -580,7 +579,7 @@ void MainWindow::on_cercaButton_clicked()
         {
             for(int i = 0; i < listArticoliDiRivista.size(); i++)
             {
-                ui->dinamicListWidgetRivista->addItem(listArticoliDiRivista [i]->getTitolo() + "     " + QString::number(listArticoliDiRivista [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidgetRivista->addItem(listArticoliDiRivista [i]->getTitolo() + "      " + QString::number(listArticoliDiRivista [i]->getNumPagine()) + " Pagine");
                 ui->dinamicListWidgetRivista->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
             }
         }
@@ -600,7 +599,7 @@ void MainWindow::on_cercaButton_clicked()
             QList <Articolo*> listArticoliOrdinati = gestore.getArticoliPerRivistaSorted(idxChecked);
             for(int i = 0; i < listArticoliOrdinati.size(); i++)
             {
-                ui->dinamicListWidgetRivista->addItem(listArticoliOrdinati [i]->getTitolo() + "      " + QString::number(listArticoliOrdinati [i]->getPrezzo()) + " €");
+                ui->dinamicListWidgetRivista->addItem(listArticoliOrdinati [i]->getTitolo() + "       " + QString::number(listArticoliOrdinati [i]->getPrezzo()) + " €");
                 ui->dinamicListWidgetRivista->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
             }
         }
@@ -614,6 +613,7 @@ void MainWindow::on_cercaButton_clicked()
 
 void MainWindow::hide3()
 {
+    //Nasconde gli elementi grafici della sezione riviste
     ui->guadagnoLabel->setVisible(false); ui->guadagnoLineEdit->setVisible(false); ui->guadagnoLineEdit->setReadOnly(true);
     ui->annoLabel->setVisible(false); ui->annoSpinBox->setVisible(false); ui->annoSpinBox->setReadOnly(true);
     ui->dinamicLabelRivista->setVisible(false);
@@ -702,7 +702,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
     {
         if(idxChecked != -1)
         {
-            ui->dinamicLabel->setText("Articoli pubblicati per la conferenza");
+            ui->dinamicLabelMisto->setText("Articoli pubblicati per la conferenza");
             auto listArticoliPerConferenza = gestore.getArticoliPerConferenza(idxChecked);
 
             for(int i = 0; i < listArticoliPerConferenza.size(); i++)
@@ -718,6 +718,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
         ui->dinamicLabelMisto->setText("Keyword la cui somma degli articoli porta al guadagno piu' alto");
         auto listTutteKeyword = gestore.getTutteKeyword();
         auto listGuadagnoPerKeyword = gestore.getGuadagnoPerKeyword(listTutteKeyword);
+        //Nella seconda lista ho il guadagno di tutte le keyword
         double max = -1;
 
         for(double val : listGuadagnoPerKeyword)
@@ -743,7 +744,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
 }
 
 
-
+//Serve per tokenizzare il file di testo preso da input
 QList <QString> tokenizer(QString stringIniziale, char separator = '\n')
 {
     if(stringIniziale.back() != separator)
@@ -798,7 +799,7 @@ bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, 
         }
     }
 
-    //Tokenizzo la linea in due parti, la prima contiene il tipo er cui viene pubblicato un articolo Rivista/Conferenza
+    //Tokenizzo la linea in due parti, la prima contiene il tipo per cui viene pubblicato un articolo : Rivista/Conferenza
     //La seconda contiene il nome
     QList <QString> tipoNomePubblicato = tokenizer(nomePubblicato, ',');
 
@@ -828,6 +829,7 @@ bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, 
 
 QDate getDataFromString(QString dateString)
 {
+    //La stringa di data deve essere formato GG/MM/AAAA
     int day = 0, month = 0, year = 0;
     day = dateString.mid(0,2).toInt();
     month = dateString.mid(3,2).toInt();
@@ -908,7 +910,7 @@ void MainWindow::on_leggiButton_clicked()
                     item = new QListWidgetItem;
                     itemTemp = new QListWidgetItem;
 
-                    item->setText(nuovo.getTitolo());
+                    item->setText(nuovo.getTitolo() + "        " + QString::number(nuovo.getNumPagine()) + " pagine");
                     item->setIcon(QIcon(":/res/ArticoloColor.png"));
                     item->setCheckState(Qt::Unchecked);
                     ui->widgetArticolo->addItem(item);
