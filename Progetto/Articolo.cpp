@@ -78,6 +78,19 @@ void Articolo::setListAutori(QList<Autore *> ls) { listAutori = ls; }
 
 void Articolo::setListCorrelati(QList<Articolo *> ls) { listCorrelati = ls; }
 
+bool Articolo::influenzaLArticolo(const Articolo* secondario)
+{
+    Articolo* iniziale = this;
+
+    if(secondario->getCorrelati().contains(iniziale))
+    {
+        if(iniziale->getEditorePubblicato()->getData() < secondario->getEditorePubblicato()->getData())
+            return true;
+    }
+
+    return false;
+}
+
 bool Articolo::operator==(const Articolo& A) const
 {
     if(titolo != A.titolo || nPagine != A.nPagine || prezzo != A.prezzo)

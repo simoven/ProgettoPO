@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
     connect(ui->tutteConferenzeListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
     connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
+    connect(ui->tuttiArticoliListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
 
     connect(ui->articoloLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
     connect(ui->autoreLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
@@ -59,12 +60,25 @@ MainWindow::~MainWindow()
 
 void MainWindow::svuotaLineEdit()
 {
+    //Svuota gli elementi di input dell'home page
     ui->lineEdit1->setText("");
     ui->lineEdit2->setText("");
     ui->lineEdit3->setText("");
     ui->plainText->setPlainText("");
     ui->spinBox->setValue(0);
     ui->doubleSpinBox->setValue(0);
+}
+
+void MainWindow::svuotaTutto()
+{
+    //Svuota gli elementi delle varie pagine ricerca Autore, ricerca Rivista ecc..
+    ui->lineEditPrezzo->setText("");
+    ui->guadagnoLineEdit->setText("");
+    ui->annoSpinBox->setValue(0);
+    ui->dinamicListWidget->clear();
+    ui->dinamicListWidgetRivista->clear();
+    ui->dinamicListWidgetMisto->clear();
+    ui->dinamicListWidgetArticoli->clear();
 }
 
 void MainWindow::hide()
@@ -80,7 +94,6 @@ void MainWindow::hide()
     ui->bottoneRimuovi->setVisible(false);
 }
 
-//Bottoni vari
 
 void MainWindow::mostraTuttiAutori()
 {
@@ -91,6 +104,42 @@ void MainWindow::mostraTuttiAutori()
         ui->tuttiAutoriListWidget->addItem(listAutori [i]->getNome() + " " + listAutori [i]->getCognome());
         ui->tuttiAutoriListWidget->item(i)->setCheckState(Qt::Unchecked);
         ui->tuttiAutoriListWidget->item(i)->setIcon(QIcon(":/res/AutoreColor.png"));
+    }
+}
+
+void MainWindow::mostraTuttiArticoli()
+{
+    ui->tuttiArticoliListWidget->clear();
+    auto listArticoli = gestore.getArticoli();
+    for(int i = 0; i < listArticoli.size(); i++)
+    {
+        ui->tuttiArticoliListWidget->addItem(listArticoli [i]->getTitolo() + "        " + QString::number(listArticoli [i]->getNumPagine()) + " pagine");
+        ui->tuttiArticoliListWidget->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
+        ui->tuttiArticoliListWidget->item(i)->setCheckState(Qt::Unchecked);
+    }
+}
+
+void MainWindow::mostraTutteRiviste()
+{
+    ui->tutteRivisteListWidget->clear();
+    auto listTutteRiviste = gestore.getRiviste();
+    for(int i = 0; i < listTutteRiviste.size(); i++)
+    {
+        ui->tutteRivisteListWidget->addItem(listTutteRiviste [i]->getNome() + "      " + QString::number(listTutteRiviste [i]->getData().year()));
+        ui->tutteRivisteListWidget->item(i)->setIcon(QIcon(":res/RivistaColor.png"));
+        ui->tutteRivisteListWidget->item(i)->setCheckState(Qt::Unchecked);
+    }
+}
+
+void MainWindow::mostraTutteConferenze()
+{
+    ui->tutteConferenzeListWidget->clear();
+    auto tutteConferenze = gestore.getConferenze();
+    for(int i = 0; i < tutteConferenze.size(); i++)
+    {
+        ui->tutteConferenzeListWidget->addItem(tutteConferenze [i]->getNome() + "      " + QString::number(tutteConferenze [i]->getData().year()));
+        ui->tutteConferenzeListWidget->item(i)->setIcon(QIcon(":res/ConferenzaColor.png"));
+        ui->tutteConferenzeListWidget->item(i)->setCheckState(Qt::Unchecked);
     }
 }
 
@@ -107,8 +156,10 @@ void MainWindow::disattivaRadioButton()
     ui->articoliOrdinatiButton->setAutoExclusive(false); ui->articoliOrdinatiButton->setChecked(false); ui->articoliOrdinatiButton->setAutoExclusive(true);
 
     ui->conferenzeSimiliButton->setAutoExclusive(false); ui->conferenzeSimiliButton->setChecked(false); ui->conferenzeSimiliButton->setAutoExclusive(true);
+    ui->articoliPerConferenzaButton->setAutoExclusive(false); ui->articoliPerConferenzaButton->setChecked(false); ui->articoliPerConferenzaButton->setAutoExclusive(true);
     ui->keywordButton->setAutoExclusive(false); ui->keywordButton->setChecked(false); ui->keywordButton->setAutoExclusive(true);
 }
+
 
 void MainWindow::on_SezioneA_clicked()
 {
@@ -131,6 +182,13 @@ void MainWindow::on_SezioneC_clicked()
     ui->mainStacked->setCurrentWidget(ui->pageMetodiRivista);
     mostraTutteRiviste();
     hide3();
+}
+
+void MainWindow::on_ricercaArticoliButton_clicked()
+{
+    svuotaTutto();
+    ui->mainStacked->setCurrentWidget(ui->pageMetodiArticolo);
+    mostraTuttiArticoli();
 }
 
 void MainWindow::on_SezioneD_clicked()
@@ -158,6 +216,7 @@ void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
         if(i != idx && ptrList->item(i)->checkState() == Qt::Checked)
             ptrList->item(i)->setCheckState(Qt::Unchecked);
 }
+
 
 //Definisco cosa mostrare in base al radio button
 void MainWindow::on_AutoreButton_clicked()
@@ -419,17 +478,6 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
 }
 
 
-
-void MainWindow::svuotaTutto()
-{
-    ui->lineEditPrezzo->setText("");
-    ui->guadagnoLineEdit->setText("");
-    ui->annoSpinBox->setValue(0);
-    ui->dinamicListWidget->clear();
-    ui->dinamicListWidgetRivista->clear();
-    ui->dinamicListWidgetMisto->clear();
-}
-
 //Bottone esegui della pagina "Ricerca Autore"
 void MainWindow::on_eseguiButton_clicked()
 {
@@ -500,6 +548,8 @@ void MainWindow::on_eseguiButton_clicked()
     }
 }
 
+
+
 //Metodi per la grafica di Autore, servono a nascondere/settare gli elementi che servono
 void MainWindow::hide2()
 {
@@ -538,21 +588,6 @@ void MainWindow::on_articoliInRivisteButton_clicked()
     ui->dinamicLabel->setVisible(true);
     ui->dinamicLabel->setText("Riviste in cui l'autore non ha pubblicato articoli");
     ui->dinamicListWidget->setVisible(true);
-}
-
-
-
-//Sezione Riviste
-void MainWindow::mostraTutteRiviste()
-{
-    ui->tutteRivisteListWidget->clear();
-    auto listTutteRiviste = gestore.getRiviste();
-    for(int i = 0; i < listTutteRiviste.size(); i++)
-    {
-        ui->tutteRivisteListWidget->addItem(listTutteRiviste [i]->getNome() + "      " + QString::number(listTutteRiviste [i]->getData().year()));
-        ui->tutteRivisteListWidget->item(i)->setIcon(QIcon(":res/RivistaColor.png"));
-        ui->tutteRivisteListWidget->item(i)->setCheckState(Qt::Unchecked);
-    }
 }
 
 //Bottone Esegui della pagina "Ricerca Riviste"
@@ -611,6 +646,9 @@ void MainWindow::on_cercaButton_clicked()
     }
 }
 
+
+
+
 void MainWindow::hide3()
 {
     //Nasconde gli elementi grafici della sezione riviste
@@ -643,20 +681,6 @@ void MainWindow::on_articoliOrdinatiButton_clicked()
     ui->dinamicLabelRivista->setVisible(true);
     ui->dinamicLabelRivista->setText("Articoli ordinati pubblicati per la rivista ");
     ui->dinamicListWidgetRivista->setVisible(true);
-}
-
-
-
-void MainWindow::mostraTutteConferenze()
-{
-    ui->tutteConferenzeListWidget->clear();
-    auto tutteConferenze = gestore.getConferenze();
-    for(int i = 0; i < tutteConferenze.size(); i++)
-    {
-        ui->tutteConferenzeListWidget->addItem(tutteConferenze [i]->getNome() + "      " + QString::number(tutteConferenze [i]->getData().year()));
-        ui->tutteConferenzeListWidget->item(i)->setIcon(QIcon(":res/ConferenzaColor.png"));
-        ui->tutteConferenzeListWidget->item(i)->setCheckState(Qt::Unchecked);
-    }
 }
 
 //Bottone Esegui della pagina "Misto"
@@ -740,10 +764,48 @@ void MainWindow::on_eseguiButtonMisto_clicked()
         QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
         msg.exec();
     }
-
 }
 
 
+
+//Bottone esegui di ricerca Articoli
+void MainWindow::on_eseguiButtonArticoli_clicked()
+{
+    ui->dinamicListWidgetArticoli->clear();
+    //Cerco l'articolo che è stato selezionato
+    int idxChecked = -1;
+    for(int i = 0; i < ui->tuttiArticoliListWidget->count(); i++)
+    {
+        if(ui->tuttiArticoliListWidget->item(i)->checkState() == Qt::Checked)
+        {
+            idxChecked = i;
+            break;
+        }
+    }
+
+    if(ui->mostraArticoliInfluenzatiButton->isChecked())
+    {
+        if(idxChecked != -1)
+        {
+            Articolo* artAttuale = gestore.getArticoli() [idxChecked];
+            auto listInfluenzati = gestore.getInfluenzati(artAttuale);
+
+            for(int i = 0; i < listInfluenzati.size(); i++)
+            {
+                ui->dinamicListWidgetArticoli->addItem(listInfluenzati [i]->getTitolo() + + "        " + QString::number(listInfluenzati [i]->getNumPagine()) + " pagine");
+                ui->dinamicListWidgetArticoli->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
+            }
+        }
+    }
+    else
+    {
+        QMessageBox msg(QMessageBox::Information, "Attenzione", "Devi selezionare un'opzione");
+        msg.exec();
+    }
+}
+
+
+//Da qui in poi riguarda tutto la sezione di input da FIle di testo
 //Serve per tokenizzare il file di testo preso da input
 QList <QString> tokenizer(QString stringIniziale, char separator = '\n')
 {
@@ -1026,6 +1088,7 @@ void MainWindow::on_istruzioniButton_clicked()
     msg.exec();
 }
 
+
 void MainWindow::on_infoProgButton_clicked()
 {
     QString text = "Progetto singolo a cura di : Simone Ventrici\n"
@@ -1035,8 +1098,9 @@ void MainWindow::on_infoProgButton_clicked()
                    "Sezione C : 3, 5, 6\n"
                    "Sezione D : 4, 6\n"
                    "Sezione E : 2\n"
-                   "Sezione F : 4, 5";
+                   "Sezione F : 1, 4, 5";
 
     QMessageBox msg(QMessageBox::Information, "Informazioni sul progetto", text);
     msg.exec();
 }
+

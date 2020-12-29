@@ -39,6 +39,8 @@ class Articolo
         void setListAutori(QList <Autore*> ls);
         void setListCorrelati(QList <Articolo*> ls);
 
+        bool influenzaLArticolo(const Articolo* art);
+
         bool operator==(const Articolo& A) const;
 };
 

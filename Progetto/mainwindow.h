@@ -36,6 +36,7 @@ class MainWindow : public QMainWindow
             void on_SezioneA_clicked();
             void on_SezioneB_clicked();
             void on_SezioneC_clicked();
+            void on_ricercaArticoliButton_clicked();
             void on_SezioneD_clicked();
 
             void on_AutoreButton_clicked();
@@ -68,8 +69,9 @@ class MainWindow : public QMainWindow
             void on_leggiButton_clicked();
 
             void on_istruzioniButton_clicked();
-
             void on_infoProgButton_clicked();
+
+            void on_eseguiButtonArticoli_clicked();
 
     signals:
             void widgetClicked(QListWidget* itm);
@@ -88,6 +90,7 @@ class MainWindow : public QMainWindow
             void mostraTuttiAutori();
             void mostraTutteRiviste();
             void mostraTutteConferenze();
+            void mostraTuttiArticoli();
             void svuotaLineEdit();
 
             bool inputAutoreValido(Articolo&, QString, QString);

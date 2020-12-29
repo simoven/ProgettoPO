@@ -499,6 +499,39 @@ bool Gestore::areSimilar(const QList<QString> &listaKeyword1, const QList<QStrin
     return false;
 }
 
+const QList <Articolo*> Gestore::getInfluenzati(Articolo* attuale) const
+{
+    //Prima cerco gli articoli che sono influenzati direttamente
+    QList <Articolo*> influenzati;
+    for(Articolo* art : listArticoli)
+    {
+        if(attuale != art)
+        {
+            if(attuale->influenzaLArticolo(art))
+            {
+                if(!influenzati.contains(art))
+                    influenzati.push_back(art);
+            }
+        }
+    }
+
+    //Dopo, per ogni articolo influenzato direttamente, controllo se a sua volta ne influenza altri che non siano già presenti
+    for(int i = 0; i < influenzati.size(); i++)
+    {
+        Articolo* art = influenzati [i];
+        for(Articolo* tutti : listArticoli)
+        {
+            if(attuale != tutti && art != tutti)
+            {
+                if(art->influenzaLArticolo(tutti) && !influenzati.contains(tutti))
+                    influenzati.push_back(tutti);
+            }
+        }
+    }
+
+    return influenzati;
+}
+
 
 
 

@@ -56,6 +56,8 @@ class Gestore
 
         const QList <QString> getKeywordConferenzaAt(int idx) const;
 
+        const QList <Articolo*> getInfluenzati(Articolo* iniziale) const;
+
         bool areSimilar(const QList <QString>& listaKeyword1, const QList <QString>& listaKeyword2) const;
 };
 
