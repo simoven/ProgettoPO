@@ -41,9 +41,6 @@ bool Conferenza::operator==(const Conferenza &C) const
     if(getNome() != C.getNome() || (getData().year() != C.getData().year()) || luogo != C.luogo)
         return false;
 
-    if(listOrganizzatori != C.listOrganizzatori)
-        return false;
-
     return true;
 }
 

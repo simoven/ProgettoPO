@@ -180,7 +180,7 @@ void MainWindow::on_ArticoloButton_clicked()
     ui->labelStacked->setText("Articoli : ");
     ui->label1->setText("Titolo"); ui->lineEdit1->setVisible(true);
     ui->label2->setText("Keyword"); ui->lineEdit2->setVisible(true);
-    ui->lineEdit2->setPlaceholderText("Scrivi le keyword separate da virgole, senza spazi");
+    ui->lineEdit2->setPlaceholderText("Scrivi le keyword separate da virgola e massimo uno spazio");
     ui->label5->setText("Pagine"); ui->spinBox->setVisible(true);
     ui->label6->setText("Prezzo"); ui->doubleSpinBox->setVisible(true);
 }
@@ -707,7 +707,7 @@ void MainWindow::on_eseguiButtonMisto_clicked()
 
             for(int i = 0; i < listArticoliPerConferenza.size(); i++)
             {
-                ui->dinamicListWidgetMisto->addItem(listArticoliPerConferenza [i]->getTitolo() + "     " + QString::number(listArticoliPerConferenza [i]->getNumPagine()) + " Pagine");
+                ui->dinamicListWidgetMisto->addItem(listArticoliPerConferenza [i]->getTitolo() + "      " + QString::number(listArticoliPerConferenza [i]->getNumPagine()) + " Pagine");
                 ui->dinamicListWidgetMisto->item(i)->setIcon(QIcon(":res/ArticoloColor.png"));
             }
 

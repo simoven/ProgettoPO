@@ -116,7 +116,7 @@ void itemDialog::showArticolo()
     {
         text += article->getKeyword() [i];
         if(i != article->getKeyword().size() - 1)
-            text += ",";
+            text += ", ";
     }
 
     ui->itmLineEdit3->setText(text);
@@ -141,7 +141,7 @@ void itemDialog::showArticolo()
     //aggiungo tutte le conferenze
     for(int i = 0; i < listConf.size(); i++)
     {
-        ui->itmComboBox->addItem(QIcon(":/res/ConferenzaColor.png"), listConf [i]->getNome());
+        ui->itmComboBox->addItem(QIcon(":/res/ConferenzaColor.png"), listConf [i]->getNome() + "       " + QString::number(listConf [i]->getData().year()));
 
         if(article->getEditorePubblicato() == listConf [i])
             ui->itmComboBox->setCurrentIndex(i+1);
@@ -151,7 +151,7 @@ void itemDialog::showArticolo()
     //Aggiungo tutte le riviste
     for(int i = 0; i < listRivista.size(); i++)
     {
-        ui->itmComboBox->addItem(QIcon(":/res/RivistaColor.png"), listRivista [i]->getNome());
+        ui->itmComboBox->addItem(QIcon(":/res/RivistaColor.png"), listRivista [i]->getNome() + "       " + QString::number(listRivista [i]->getData().year()));
 
         if(article->getEditorePubblicato() == listRivista [i])
             ui->itmComboBox->setCurrentIndex(listConf.size() + i + 1);
