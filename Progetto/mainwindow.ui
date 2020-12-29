@@ -900,7 +900,14 @@ QPushButton:hover{
               <item>
                <widget class="QRadioButton" name="articoliOrdinatiButton">
                 <property name="text">
-                 <string>Visualizza articoli ordinati per prezzo</string>
+                 <string>Visualizza articoli della rivista ordinati per prezzo</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="rivisteSpecialisticheButton">
+                <property name="text">
+                 <string>Mostra tutte le riviste specialistiche</string>
                 </property>
                </widget>
               </item>
@@ -1292,22 +1299,6 @@ QPushButton:hover{
           </item>
           <item>
            <widget class="QListWidget" name="tutteConferenzeListWidget"/>
-          </item>
-          <item>
-           <spacer name="verticalSpacer_8">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_13">

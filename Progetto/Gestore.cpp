@@ -87,6 +87,9 @@ bool Gestore::aggiungiArticolo(const Articolo &article, bool mostraErrore, bool 
     if(article.getTitolo() == "" || article.getNumPagine() == 0 || article.getKeyword().size() == 0)
         valid = false;
 
+    if(article.getKeyword().size() == 1 && article.getKeyword() [0].isEmpty())
+        valid = false;
+
     if(!isNuovaAggiunta)
     {
         if(article.getAutori().size() == 0 || article.getEditorePubblicato() == nullptr)
@@ -337,7 +340,6 @@ const QList <Articolo*> Gestore::getArticoliPerAutore(int idx) const
 
 bool compara(Articolo* item1, Articolo* item2)
 {
-    //Se l'articolo non è stato pubblicato per una rivista/conferenza, imposto l'anno di default a 2020
     int anno1 = 0, anno2 = 0;
 
     anno1 = item1->getEditorePubblicato()->getData().year();
@@ -371,7 +373,7 @@ const QList <Articolo*> Gestore::getArticoliPerAutoreSorted(int idx) const
 const QList <Base*> Gestore::getRivisteNonPubblicateDaAutore(int idx) const
 {
     auto listArticoliPerAutore = getArticoliPerAutore(idx);
-    //Prendo inizialmente tutte le riviste e poi rimuovo quelle per cui l'autore non ha pubblicato
+    //Prendo inizialmente tutte le riviste e poi rimuovo quelle per cui l'autore ha pubblicato qualcosa
     QList <Base*> listTutteRiviste;
     for(Base* ptr : listRiviste)
         listTutteRiviste.push_back(ptr);
@@ -383,27 +385,21 @@ const QList <Base*> Gestore::getRivisteNonPubblicateDaAutore(int idx) const
     return listTutteRiviste;
 }
 
-const QList <Articolo*> Gestore::getArticoliPerRivista(int idx) const
+const QList <Articolo*> Gestore::getArticoliPerRivistaOConferenza(int idx, int tipo) const
 {
-    //Prendi tutti gli articoli pubblicati per una rivista
-    Base* ptrRivista = listRiviste [idx];
-    QList <Articolo*> listArticoliDiRivista;
+    //Prendi tutti gli articoli pubblicati per una rivista (indice 0) o Conferenza(indice 1)
+    Base* ptrBase;
+    if(tipo == 0)
+        ptrBase = listRiviste [idx];
+    else
+        ptrBase = listConferenze [idx];
+
+    QList <Articolo*> listArticoliDiBase;
     for(Articolo* ptr : listArticoli)
-        if(ptr->getEditorePubblicato() == ptrRivista)
-            listArticoliDiRivista.push_back(ptr);
+        if(ptr->getEditorePubblicato() == ptrBase)
+            listArticoliDiBase.push_back(ptr);
 
-    return listArticoliDiRivista;
-}
-
-const QList <Articolo*> Gestore::getArticoliPerConferenza(int idx) const
-{
-    Base* ptrConferenza = listConferenze [idx];
-    QList <Articolo*> listArticoliDiConferenza;
-    for(Articolo* ptr : listArticoli)
-        if(ptr->getEditorePubblicato() == ptrConferenza)
-            listArticoliDiConferenza.push_back(ptr);
-
-    return listArticoliDiConferenza;
+    return listArticoliDiBase;
 }
 
 bool compara2(Articolo* art1, Articolo* art2)
@@ -416,7 +412,7 @@ bool compara2(Articolo* art1, Articolo* art2)
 
 const QList <Articolo*> Gestore::getArticoliPerRivistaSorted(int idx) const
 {
-    auto listArticoliDiRivista = getArticoliPerRivista(idx);
+    auto listArticoliDiRivista = getArticoliPerRivistaOConferenza(idx, 0);
     std::stable_sort(listArticoliDiRivista.begin(), listArticoliDiRivista.end(), compara2);
     return listArticoliDiRivista;
 }
@@ -454,15 +450,20 @@ const QList <double> Gestore::getGuadagnoPerKeyword(const QList<QString> &listaK
     return listaCosti;
 }
 
-const QList <QString> Gestore::getKeywordConferenzaAt(int idx) const
+const QList <QString> Gestore::getKeywordRivistaOConferenzaAt(int idx, int tipo) const
 {
-    //Per ogni articolo pubblicato per una certa conferenza, prendo le sue keyword
-    Base* ptrConferenza = listConferenze [idx];
+    //Per ogni articolo pubblicato per una certa rivista (indice 0) o conferenza (indice1), prendo le sue keyword
+    Base* ptrBase;
+    if(tipo == 0)
+        ptrBase = listRiviste [idx];
+    else
+        ptrBase = listConferenze [idx];
+
     QList <QString> keyList;
 
     for(Articolo* ptrArt : listArticoli)
     {
-        if(ptrArt->getEditorePubblicato() == ptrConferenza)
+        if(ptrArt->getEditorePubblicato() == ptrBase)
         {
             for(QString key : ptrArt->getKeyword())
                 keyList.push_back(key);
@@ -507,11 +508,8 @@ const QList <Articolo*> Gestore::getInfluenzati(Articolo* attuale) const
     {
         if(attuale != art)
         {
-            if(attuale->influenzaLArticolo(art))
-            {
-                if(!influenzati.contains(art))
-                    influenzati.push_back(art);
-            }
+            if(attuale->influenzaLArticolo(art) && !influenzati.contains(art))
+                influenzati.push_back(art);
         }
     }
 
@@ -532,12 +530,46 @@ const QList <Articolo*> Gestore::getInfluenzati(Articolo* attuale) const
     return influenzati;
 }
 
+bool Gestore::isRivista1Specialistica(Rivista* rivista1, Rivista* rivista2) const
+{
+    int index1 = listRiviste.indexOf(rivista1);
+    int index2 = listRiviste.indexOf(rivista2);
+    auto listKeywordRivista1 = getKeywordRivistaOConferenzaAt(index1, 0);
+    auto listKeywordRivista2 = getKeywordRivistaOConferenzaAt(index2, 0);
 
+    if(listKeywordRivista1.isEmpty() || listKeywordRivista2.isEmpty())
+        return false;
 
+    for(QString key : listKeywordRivista1)
+        if(!listKeywordRivista2.contains(key))
+            return false;
 
+    if(listKeywordRivista1.size() < listKeywordRivista2.size())
+        return true;
 
+    return false;
+}
 
+const QList <Rivista*> Gestore::getRivisteSpecialistiche() const
+{
+    QList <Rivista*> listSpecialistiche;
+    for(Rivista* rivista1 : listRiviste)
+    {
+        for(Rivista* rivista2 : listRiviste)
+        {
+            if(rivista1 != rivista2)
+            {
+                if(isRivista1Specialistica(rivista1, rivista2) && !listSpecialistiche.contains(rivista1))
+                {
+                    listSpecialistiche.push_back(rivista1);
+                    break;
+                }
+            }
+        }
+    }
 
+    return listSpecialistiche;
+}
 
 
 

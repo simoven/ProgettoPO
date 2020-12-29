@@ -47,18 +47,22 @@ class Gestore
         const QList <Articolo*> getArticoliPerAutoreSorted(int idx) const;
         const QList <Base*> getRivisteNonPubblicateDaAutore(int idx) const;
 
-        const QList <Articolo*> getArticoliPerRivista(int idx) const;
+        const QList <Articolo*> getArticoliPerRivistaOConferenza(int idx, int tipo) const;
         const QList <Articolo*> getArticoliPerRivistaSorted(int idx) const;
-        const QList <Articolo*> getArticoliPerConferenza(int idx) const;
+        //const QList <Articolo*> getArticoliPerConferenza(int idx) const;
 
         const QList <QString> getTutteKeyword() const;
         const QList <double> getGuadagnoPerKeyword(const QList <QString>& listaKeyword) const;
 
-        const QList <QString> getKeywordConferenzaAt(int idx) const;
+        const QList <QString> getKeywordRivistaOConferenzaAt(int idx, int tipo) const;
 
         const QList <Articolo*> getInfluenzati(Articolo* iniziale) const;
 
         bool areSimilar(const QList <QString>& listaKeyword1, const QList <QString>& listaKeyword2) const;
+
+        bool isRivista1Specialistica(Rivista* rivista1, Rivista* rivista2) const;
+
+        const QList <Rivista*> getRivisteSpecialistiche() const;
 };
 
 #endif // GESTORE_H

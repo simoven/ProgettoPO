@@ -73,7 +73,15 @@ class MainWindow : public QMainWindow
 
             void on_eseguiButtonArticoli_clicked();
 
-    signals:
+            void on_conferenzeSimiliButton_clicked();
+            void on_articoliPerConferenzaButton_clicked();
+            void on_keywordButton_clicked();
+
+            void on_radioButton_clicked();
+
+            void on_rivisteSpecialisticheButton_clicked();
+
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
