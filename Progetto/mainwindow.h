@@ -77,7 +77,7 @@ class MainWindow : public QMainWindow
             void on_articoliPerConferenzaButton_clicked();
             void on_keywordButton_clicked();
 
-            void on_radioButton_clicked();
+
 
             void on_rivisteSpecialisticheButton_clicked();
 

@@ -636,6 +636,7 @@ void MainWindow::on_rivisteSpecialisticheButton_clicked()
     ui->dinamicListWidgetRivista->setVisible(true);
 }
 
+
 //Bottone Esegui della pagina "Ricerca Riviste"
 void MainWindow::on_cercaButton_clicked()
 {
@@ -1149,7 +1150,7 @@ void MainWindow::on_infoProgButton_clicked()
                    "Sezione B : 1, 4, 5\n"
                    "Sezione C : 3, 5, 6\n"
                    "Sezione D : 4, 6\n"
-                   "Sezione E : 2\n"
+                   "Sezione E : 2, 6\n"
                    "Sezione F : 1, 4, 5";
 
     QMessageBox msg(QMessageBox::Information, "Informazioni sul progetto", text);
