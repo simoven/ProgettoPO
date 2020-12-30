@@ -852,32 +852,7 @@ void MainWindow::on_eseguiButtonArticoli_clicked()
 }
 
 
-//Da qui in poi riguarda tutto la sezione di input da FIle di testo
-//Serve per tokenizzare il file di testo preso da input
-QList <QString> tokenizer(QString stringIniziale, char separator = '\n')
-{
-    if(stringIniziale.back() != separator)
-        stringIniziale += separator;
-
-    QList <QString> tokenizzata;
-    int start = 0;
-    int len = 0;
-    for(int i = 0; i < stringIniziale.length(); i++)
-    {
-        if(stringIniziale [i] == separator)
-        {
-            tokenizzata.push_back(stringIniziale.mid(start, len));
-            start = i+1;
-            len = 0;
-        }
-        else
-            len++;
-    }
-
-    tokenizzata.removeAll("");
-    return tokenizzata;
-}
-
+//Da qui in poi riguarda tutto la sezione di input da FIle di test
 bool controlloCheck(QList <QString>& tokenizzata, int nParametri)
 {
     //nParametri è pari al numero di dati che ha un autore/conferenza ... a cui va aggiunto il "---" finale
@@ -888,52 +863,6 @@ bool controlloCheck(QList <QString>& tokenizzata, int nParametri)
     }
 
     return false;
-}
-
-bool MainWindow::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, QString nomePubblicato)
-{
-    //Questa funzione serve a controllare che i nomi degli autori e della conferenza/rivista di un articolo esistano
-    QList <QString> listaNomiAutori = tokenizer(nomiAutori, ',');
-    QList <Autore*> listaPuntatoriAutore;
-    Base* ptrEditore = nullptr;
-    for(int i = 0; i < listaNomiAutori.size(); i++)
-    {
-        for(Autore* ptrAutore : gestore.getAutori())
-        {
-            if((ptrAutore->getNome() + " " + ptrAutore->getCognome()).toLower() == listaNomiAutori [i].toLower())
-            {
-                listaPuntatoriAutore.push_back(ptrAutore);
-                break;
-            }
-        }
-    }
-
-    //Tokenizzo la linea in due parti, la prima contiene il tipo per cui viene pubblicato un articolo : Rivista/Conferenza
-    //La seconda contiene il nome
-    QList <QString> tipoNomePubblicato = tokenizer(nomePubblicato, ',');
-
-    if(tipoNomePubblicato [0].toUpper() == "CF")          //Controllo nelle conferenze
-    {
-        for(Base* ptrBase : gestore.getConferenze())
-            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
-                ptrEditore = ptrBase;
-    }
-    else if(tipoNomePubblicato [0].toUpper() == "RV")         //Controllo nelle riviste
-    {
-        for(Base* ptrBase : gestore.getRiviste())
-            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
-                ptrEditore = ptrBase;
-    }
-
-    if(listaPuntatoriAutore.size() == listaNomiAutori.size() && ptrEditore != nullptr)
-    {
-        nuovoArticolo.setListAutori(listaPuntatoriAutore);
-        nuovoArticolo.setEditorePubblicato(ptrEditore);
-        return true;
-    }
-
-    return false;
-
 }
 
 QDate getDataFromString(QString dateString)
@@ -967,7 +896,7 @@ void MainWindow::on_leggiButton_clicked()
     QString testo = input.readAll();
 
     //Tokenizzo ogni linea del file
-    QList <QString> tokenizzata = tokenizer(testo);
+    QList <QString> tokenizzata = gestore.tokenizer(testo);
     QListWidgetItem* itemTemp;
     QListWidgetItem* item;
     bool check = true;
@@ -1018,7 +947,7 @@ void MainWindow::on_leggiButton_clicked()
             nuovo.addKeyword(tokenizzata [1]);
             nuovo.setNumPagine(tokenizzata [2].toInt());
             nuovo.setPrezzo(tokenizzata [3].toDouble());
-            if(inputAutoreValido(nuovo, tokenizzata [4], tokenizzata [5]))
+            if(gestore.inputAutoreValido(nuovo, tokenizzata [4], tokenizzata [5], tokenizzata [6]))
             {
                 if(gestore.aggiungiArticolo(nuovo, false))
                 {
@@ -1040,8 +969,8 @@ void MainWindow::on_leggiButton_clicked()
             else
                 elementoNonInserito = true;
 
-            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 6);
-            check = controlloCheck(tokenizzata, 6);
+            tokenizzata.erase(tokenizzata.begin(), tokenizzata.begin() + 7);
+            check = controlloCheck(tokenizzata, 7);
         }
     }
     else if(ui->conferenzaLeggiButton->isChecked())
@@ -1135,6 +1064,7 @@ void MainWindow::on_istruzioniButton_clicked()
                     "\n18.90                                             (prezzo)"
                     "\nautore rossi,autore verdi               (autori)"
                     "\nCF,conferenza12                           (pubblicazione    Tipo,Nome)"
+                    "\narticolo34,articolo17                     (articoli correlati)"
                     "\n---";
 
     QMessageBox msg(QMessageBox::Information, "Formato Valido", testo);

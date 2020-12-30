@@ -57,12 +57,14 @@ class Gestore
         const QList <QString> getKeywordRivistaOConferenzaAt(int idx, int tipo) const;
 
         const QList <Articolo*> getInfluenzati(Articolo* iniziale) const;
-
         bool areSimilar(const QList <QString>& listaKeyword1, const QList <QString>& listaKeyword2) const;
 
         bool isRivista1Specialistica(Rivista* rivista1, Rivista* rivista2) const;
-
         const QList <Rivista*> getRivisteSpecialistiche() const;
+
+        bool inputAutoreValido(Articolo&, QString, QString, QString);
+
+        QList <QString> tokenizer(QString stringaIniziale, char separartor = '\n');
 };
 
 #endif // GESTORE_H

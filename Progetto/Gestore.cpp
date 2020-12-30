@@ -174,7 +174,7 @@ bool Gestore::aggiungiConferenza(const Conferenza &conference, bool mostraErrore
         if(*it == conference)
             valid = false;
 
-    if(conference.getNome() == "" || conference.getLuogo() == "")
+    if(conference.getNome() == "" || conference.getLuogo() == "" || conference.getOrganizzatori().isEmpty())
         valid = false;
 
     if(!valid)
@@ -569,6 +569,110 @@ const QList <Rivista*> Gestore::getRivisteSpecialistiche() const
     }
 
     return listSpecialistiche;
+}
+
+//Serve per tokenizzare il file di testo preso da input
+QList <QString> Gestore::tokenizer(QString stringIniziale, char separator)
+{
+    if(stringIniziale.back() != separator)
+        stringIniziale += separator;
+
+    QList <QString> tokenizzata;
+    int start = 0;
+    int len = 0;
+    for(int i = 0; i < stringIniziale.length(); i++)
+    {
+        if(stringIniziale [i] == separator)
+        {
+            tokenizzata.push_back(stringIniziale.mid(start, len));
+            start = i+1;
+            len = 0;
+        }
+        else
+            len++;
+    }
+
+    tokenizzata.removeAll("");
+    return tokenizzata;
+}
+
+
+bool Gestore::inputAutoreValido(Articolo& nuovoArticolo, QString nomiAutori, QString nomePubblicato, QString nomiArticoliCorrelati)
+{
+    //Questa funzione serve a controllare che i nomi degli autori e della conferenza/rivista di un articolo esistano
+    QList <QString> listaNomiAutori = tokenizer(nomiAutori, ',');
+    QList <QString> listaNomiArticoliCorrelati = tokenizer(nomiArticoliCorrelati, ',');
+    QList <Autore*> listaPuntatoriAutore;
+    QList <Articolo*> listaPuntatoriArticolo;
+    Base* ptrEditore = nullptr;
+
+    //Controllo l'esistenza degli autori e , se esistono, aggiungo il puntatore alla lista
+    for(int i = 0; i < listaNomiAutori.size(); i++)
+    {
+        for(Autore* ptrAutore : listAutori)
+        {
+            if((ptrAutore->getNome() + " " + ptrAutore->getCognome()).toLower() == listaNomiAutori [i].toLower())
+            {
+                listaPuntatoriAutore.push_back(ptrAutore);
+                break;
+            }
+        }
+    }
+
+    //Tokenizzo la linea in due parti, la prima contiene il tipo per cui viene pubblicato un articolo : Rivista/Conferenza
+    //La seconda contiene il nome
+    QList <QString> tipoNomePubblicato = tokenizer(nomePubblicato, ',');
+
+    if(tipoNomePubblicato [0].toUpper() == "CF")          //Controllo nelle conferenze
+    {
+        for(Base* ptrBase : listConferenze)
+            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
+                ptrEditore = ptrBase;
+    }
+    else if(tipoNomePubblicato [0].toUpper() == "RV")         //Controllo nelle riviste
+    {
+        for(Base* ptrBase : listRiviste)
+            if(ptrBase->getNome().toLower() == tipoNomePubblicato [1].toLower())
+                ptrEditore = ptrBase;
+    }
+
+
+    //Adesso controllo l'esistenza degli articoli correlati, se nel file di testo è stato messo un trattino - , allora il campo è vuoto
+    bool campoArticoliCorrelatiVuoto = false;
+    if(listaNomiArticoliCorrelati [0] == '-')
+        campoArticoliCorrelatiVuoto = true;
+
+    if(!campoArticoliCorrelatiVuoto)
+    {
+        //Poichè il campo non è vuoto, cerco gli articoli
+        for(int i = 0; i < listaNomiArticoliCorrelati.size(); i++)
+        {
+            for(Articolo* art : listArticoli)
+            {
+                if(art->getTitolo().toLower() == listaNomiArticoliCorrelati [i])
+                    listaPuntatoriArticolo.push_back(art);
+            }
+        }
+    }
+
+    //Controllo finale
+    if(listaPuntatoriAutore.size() == listaNomiAutori.size() && ptrEditore != nullptr)
+    {
+        nuovoArticolo.setListAutori(listaPuntatoriAutore);
+        nuovoArticolo.setEditorePubblicato(ptrEditore);
+
+        if(!campoArticoliCorrelatiVuoto)
+        {
+            if(listaNomiArticoliCorrelati.size() == listaPuntatoriArticolo.size())
+                nuovoArticolo.setListCorrelati(listaPuntatoriArticolo);
+            else
+                return false;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 

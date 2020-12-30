@@ -57,14 +57,11 @@ void Articolo::addKeyword(QString keyword)
 
     for(QString& key : listKeyword)
     {
-        if(!key.isEmpty())
-        {
-            if(key.back() == ' ')
-                key.chop(1);
+        if(!key.isEmpty() && key.back() == ' ')
+            key.chop(1);
 
-            if(key.front() == ' ')
-                key.remove(0,1);
-        }
+        if(!key.isEmpty() && key.front() == ' ')
+            key.remove(0,1);
     }
 
 }

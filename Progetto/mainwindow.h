@@ -47,6 +47,7 @@ class MainWindow : public QMainWindow
 
             void onWidgetClicked();
             void onWidgetDoubleClicked(QListWidgetItem* item);
+            void disattivaElementiChecked(QListWidgetItem*);
 
             void on_bottoneRimuovi_clicked();
             void onRimuoviItem(QListWidget* itm);
@@ -61,10 +62,13 @@ class MainWindow : public QMainWindow
             void on_tuttiArticoliRivistaButton_clicked();
             void on_guadagnoRivistaButton_clicked();
             void on_articoliOrdinatiButton_clicked();
+            void on_rivisteSpecialisticheButton_clicked();
 
             void on_eseguiButtonMisto_clicked();
+            void on_conferenzeSimiliButton_clicked();
+            void on_articoliPerConferenzaButton_clicked();
+            void on_keywordButton_clicked();
 
-            void disattivaElementiChecked(QListWidgetItem*);
             void on_pushButton_clicked();
             void on_leggiButton_clicked();
 
@@ -73,15 +77,8 @@ class MainWindow : public QMainWindow
 
             void on_eseguiButtonArticoli_clicked();
 
-            void on_conferenzeSimiliButton_clicked();
-            void on_articoliPerConferenzaButton_clicked();
-            void on_keywordButton_clicked();
 
-
-
-            void on_rivisteSpecialisticheButton_clicked();
-
-signals:
+    signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
@@ -100,8 +97,6 @@ signals:
             void mostraTutteConferenze();
             void mostraTuttiArticoli();
             void svuotaLineEdit();
-
-            bool inputAutoreValido(Articolo&, QString, QString);
 };
 
 #endif // MAINWINDOW_H

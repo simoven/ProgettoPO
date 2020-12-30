@@ -18,7 +18,7 @@ void Autore::setCognome(QString surname) { cognome = surname; }
 
 void Autore::addAfferenze(QString workplace, char separator)
 {
-    if(workplace.size() != 0)
+    if(workplace.size() != 0 && workplace [0] != '-')
     {
         if(workplace.back() != separator)
             workplace += separator;
@@ -38,6 +38,8 @@ void Autore::addAfferenze(QString workplace, char separator)
                 len++;
         }
     }
+
+    afferenze.removeAll("");
 }
 
 bool Autore::operator==(const Autore &A) const
