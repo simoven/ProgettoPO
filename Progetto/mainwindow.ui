@@ -261,7 +261,7 @@ QListWidget::indicator:checked {
     <item>
      <widget class="QStackedWidget" name="mainStacked">
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="pageMain">
        <property name="styleSheet">

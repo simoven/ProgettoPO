@@ -39,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tuttiArticoliListWidget, SIGNAL(itemClicked(QListWidgetItem*)), this, SLOT(disattivaElementiChecked(QListWidgetItem*)));
 
     connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidget, SLOT(clear()));
+    connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->lineEditPrezzo, SLOT(clear()));
     connect(ui->tutteConferenzeListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetMisto, SLOT(clear()));
     connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetRivista, SLOT(clear()));
     connect(ui->tuttiArticoliListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetArticoli, SLOT(clear()));
@@ -560,7 +561,7 @@ void MainWindow::on_eseguiButton_clicked()
             if(listArticoli.size() != 0)
                 price /= listArticoli.size();
 
-            ui->lineEditPrezzo->setText(QString::number(price));
+            ui->lineEditPrezzo->setText(QString::number(price) + " €");
         }
         else if(ui->ordinatiArticoliButton->isChecked())
         {
@@ -689,7 +690,7 @@ void MainWindow::on_cercaButton_clicked()
                 for(Articolo* art : listArticoliDiRivista)
                     guadagno += art->getPrezzo();
 
-                ui->guadagnoLineEdit->setText(QString::number(guadagno));
+                ui->guadagnoLineEdit->setText(QString::number(guadagno) + " €");
             }
             else if(ui->articoliOrdinatiButton->isChecked())
             {
@@ -990,7 +991,7 @@ void MainWindow::on_leggiButton_clicked()
                 item = new QListWidgetItem;
                 itemTemp = new QListWidgetItem;
 
-                item->setText(nuovo.getNome() + "      " + QString::number(nuovo.getData().year()));
+                item->setText(nuovo.getNome() + "       " + QString::number(nuovo.getData().year()));
                 item->setIcon(QIcon(":/res/ConferenzaColor.png"));
                 item->setCheckState(Qt::Unchecked);
                 ui->widgetConferenza->addItem(item);

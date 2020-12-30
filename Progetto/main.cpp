@@ -19,10 +19,5 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    /*QMessageBox info(QMessageBox::Information, "Istruzioni", "Dopo aver aggiunto un elemento, fai doppio click su di esso"
-                                                             " per visualizzarne le informazioni, oppure modificarlo ");
-
-    info.exec();*/
-
     return a.exec();
 }
