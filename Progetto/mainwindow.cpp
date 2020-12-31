@@ -42,6 +42,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tuttiAutoriListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->lineEditPrezzo, SLOT(clear()));
     connect(ui->tutteConferenzeListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetMisto, SLOT(clear()));
     connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetRivista, SLOT(clear()));
+    connect(ui->tutteRivisteListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->guadagnoLineEdit, SLOT(clear()));
     connect(ui->tuttiArticoliListWidget, SIGNAL(itemClicked(QListWidgetItem*)), ui->dinamicListWidgetArticoli, SLOT(clear()));
 
     connect(ui->articoloLeggiButton, SIGNAL(clicked()), ui->percorsoLineEdit, SLOT(clear()));
@@ -213,7 +214,7 @@ void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
 {
     QListWidget* ptrList = item->listWidget();
     int idx = ptrList->row(item);
-    //Se faccio check su ul elemento di una listWidget disattivo tutti gli altri
+    //Se faccio check su un elemento di una listWidget disattivo tutti gli altri
 
     for(int i = 0; i < ptrList->count(); i++)
         if(i != idx && ptrList->item(i)->checkState() == Qt::Checked)
@@ -221,7 +222,7 @@ void MainWindow::disattivaElementiChecked(QListWidgetItem* item)
 }
 
 
-//Definisco cosa mostrare in base al radio button
+//Definisco cosa mostrare in base al radio button della Home Page
 void MainWindow::on_AutoreButton_clicked()
 {
     hide();
@@ -473,6 +474,7 @@ void MainWindow::onWidgetDoubleClicked(QListWidgetItem* item)
 
     if(idx != -1)
     {
+        //Apro la seconda finestra
         itemDialog dialog(idx, tipo, &gestore, item);
         dialog.setModal(true);
         dialog.exec();
@@ -853,7 +855,7 @@ void MainWindow::on_eseguiButtonArticoli_clicked()
 }
 
 
-//Da qui in poi riguarda tutto la sezione di input da FIle di test
+//Da qui in poi riguarda tutto la sezione di input da FIle di testo
 bool controlloCheck(QList <QString>& tokenizzata, int nParametri)
 {
     //nParametri è pari al numero di dati che ha un autore/conferenza ... a cui va aggiunto il "---" finale
@@ -900,11 +902,14 @@ void MainWindow::on_leggiButton_clicked()
     QList <QString> tokenizzata = gestore.tokenizer(testo);
     QListWidgetItem* itemTemp;
     QListWidgetItem* item;
-    bool check = true;
+    bool check = false;
     bool elementoNonInserito = false;
 
     if(ui->autoreLeggiButton->isChecked())
     {
+        if(tokenizzata.size() >= 4)
+            check = true;
+
         while(check)
         {
             //Prendo dalla lista di tokenizzati i vari dati che mi servono, che saranno sempre nelle prime posizioni perché dopo rimuovo i dati inseriti
@@ -941,6 +946,9 @@ void MainWindow::on_leggiButton_clicked()
     }
     else if(ui->articoloLeggiButton->isChecked())
     {
+        if(tokenizzata.size() >= 8)
+            check = true;
+
         while(check)
         {
             Articolo nuovo;
@@ -976,6 +984,9 @@ void MainWindow::on_leggiButton_clicked()
     }
     else if(ui->conferenzaLeggiButton->isChecked())
     {
+        if(tokenizzata.size() >= 7)
+            check = true;
+
         while(check)
         {
             Conferenza nuovo;
@@ -1009,6 +1020,9 @@ void MainWindow::on_leggiButton_clicked()
     }
     else if(ui->rivistaLeggiButton->isChecked())
     {
+        if(tokenizzata.size() >= 6)
+            check = true;
+
         while(check)
         {
             Rivista nuovo;

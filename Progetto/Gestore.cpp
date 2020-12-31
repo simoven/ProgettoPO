@@ -574,7 +574,7 @@ const QList <Rivista*> Gestore::getRivisteSpecialistiche() const
 //Serve per tokenizzare il file di testo preso da input
 QList <QString> Gestore::tokenizer(QString stringIniziale, char separator)
 {
-    if(stringIniziale.back() != separator)
+    if(stringIniziale.size() > 0 && stringIniziale.back() != separator)
         stringIniziale += separator;
 
     QList <QString> tokenizzata;
