@@ -78,7 +78,9 @@ class MainWindow : public QMainWindow
             void on_eseguiButtonArticoli_clicked();
 
 
-    signals:
+            void on_lineEdit_textEdited(const QString &arg1);
+
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
