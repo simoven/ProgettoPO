@@ -638,7 +638,7 @@ QPushButton:hover{
         <item>
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QLineEdit" name="lineEdit">
+           <widget class="QLineEdit" name="ricercaAvanzataAutore">
             <property name="minimumSize">
              <size>
               <width>0</width>

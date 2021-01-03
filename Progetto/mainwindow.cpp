@@ -83,6 +83,7 @@ void MainWindow::svuotaTutto()
     ui->dinamicListWidgetRivista->clear();
     ui->dinamicListWidgetMisto->clear();
     ui->dinamicListWidgetArticoli->clear();
+    ui->ricercaAvanzataAutore->clear();
 }
 
 void MainWindow::hide()
@@ -524,9 +525,12 @@ void MainWindow::on_articoliInRivisteButton_clicked()
     ui->dinamicListWidget->setVisible(true);
 }
 
-void MainWindow::on_lineEdit_textEdited(const QString &arg1)
+void MainWindow::on_ricercaAvanzataAutore_textEdited(const QString &arg1)
 {
     ui->tuttiAutoriListWidget->clear();
+    ui->dinamicListWidget->clear();
+    indiciListe.clear();
+
     int idxMessi = 0;
     auto tuttiAutori = gestore.getAutori();
     for(int i = 0; i < tuttiAutori.size(); i++)
@@ -536,6 +540,7 @@ void MainWindow::on_lineEdit_textEdited(const QString &arg1)
             ui->tuttiAutoriListWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
             ui->tuttiAutoriListWidget->item(idxMessi)->setIcon(QIcon(":res/AutoreColor.png"));
             ui->tuttiAutoriListWidget->item(idxMessi)->setCheckState(Qt::Unchecked);
+            indiciListe.push_back(i);
             idxMessi++;
         }
     }
@@ -557,21 +562,8 @@ void MainWindow::on_eseguiButton_clicked()
         }
     }
 
-    if(ui->lineEdit->text() != "")
-    {
-        QString nomeCognome = ui->tuttiAutoriListWidget->item(idxChecked)->text();
-        auto tuttiAutori = gestore.getAutori();
-        for(int i = 0; i < tuttiAutori.size(); i++)
-        {
-            QString nameSurname = tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome();
-            if(nomeCognome == nameSurname)
-            {
-                idxChecked = i;
-                break;
-            }
-        }
-    }
-
+    if(ui->ricercaAvanzataAutore->text() != "")
+        idxChecked = indiciListe [idxChecked];
 
     QList <Articolo*> listArticoli;
     if(idxChecked != -1)

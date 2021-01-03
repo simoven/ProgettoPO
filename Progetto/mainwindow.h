@@ -78,9 +78,9 @@ class MainWindow : public QMainWindow
             void on_eseguiButtonArticoli_clicked();
 
 
-            void on_lineEdit_textEdited(const QString &arg1);
+            void on_ricercaAvanzataAutore_textEdited(const QString &arg1);
 
-signals:
+    signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
@@ -88,6 +88,7 @@ signals:
     private:
             Ui::MainWindow *ui;
             Gestore gestore;
+            QVector <int> indiciListe;
             void hide();
             void hide2();
             void hide3();
