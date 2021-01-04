@@ -535,7 +535,7 @@ void MainWindow::on_ricercaAvanzataAutore_textEdited(const QString &arg1)
     auto tuttiAutori = gestore.getAutori();
     for(int i = 0; i < tuttiAutori.size(); i++)
     {
-        if((tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome()).contains(arg1))
+        if((tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome()).toLower().contains(arg1.toLower()))
         {
             ui->tuttiAutoriListWidget->addItem(tuttiAutori [i]->getNome() + " " + tuttiAutori [i]->getCognome());
             ui->tuttiAutoriListWidget->item(idxMessi)->setIcon(QIcon(":res/AutoreColor.png"));
@@ -562,7 +562,7 @@ void MainWindow::on_eseguiButton_clicked()
         }
     }
 
-    if(ui->ricercaAvanzataAutore->text() != "")
+    if(ui->ricercaAvanzataAutore->text() != "" && idxChecked != -1)
         idxChecked = indiciListe [idxChecked];
 
     QList <Articolo*> listArticoli;
@@ -664,6 +664,26 @@ void MainWindow::on_rivisteSpecialisticheButton_clicked()
     ui->dinamicListWidgetRivista->setVisible(true);
 }
 
+void MainWindow::on_ricercaAvanzataRiviste_textEdited(const QString &arg1)
+{
+    ui->tutteRivisteListWidget->clear();
+    ui->dinamicListWidgetRivista->clear();
+    indiciListe.clear();
+
+    int idxMessi = 0;
+    auto tutteRiviste = gestore.getRiviste();
+    for(int i = 0; i < tutteRiviste.size(); i++)
+    {
+        if((tutteRiviste [i]->getNome() + " " + QString::number(tutteRiviste [i]->getData().year())).toLower().contains(arg1.toLower()))
+        {
+            ui->tutteRivisteListWidget->addItem(tutteRiviste [i]->getNome() + "       "  + QString::number(tutteRiviste [i]->getData().year()));
+            ui->tutteRivisteListWidget->item(idxMessi)->setIcon(QIcon(":res/RivistaColor.png"));
+            ui->tutteRivisteListWidget->item(idxMessi)->setCheckState(Qt::Unchecked);
+            indiciListe.push_back(i);
+            idxMessi++;
+        }
+    }
+}
 
 //Bottone Esegui della pagina "Ricerca Riviste"
 void MainWindow::on_cercaButton_clicked()
@@ -680,6 +700,9 @@ void MainWindow::on_cercaButton_clicked()
             break;
         }
     }
+
+    if(ui->ricercaAvanzataRiviste->text() != "" && idxChecked != -1)
+        idxChecked = indiciListe [idxChecked];
 
     if(ui->rivisteSpecialisticheButton->isChecked())
     {
@@ -758,6 +781,27 @@ void MainWindow::on_keywordButton_clicked()
     ui->dinamicListWidgetMisto->clear();
 }
 
+void MainWindow::on_ricercaAvanzataConferenze_textEdited(const QString &arg1)
+{
+    ui->tutteConferenzeListWidget->clear();
+    ui->dinamicListWidgetMisto->clear();
+    indiciListe.clear();
+
+    int idxMessi = 0;
+    auto tutteConferenze = gestore.getConferenze();
+    for(int i = 0; i < tutteConferenze.size(); i++)
+    {
+        if((tutteConferenze [i]->getNome() + " " + QString::number(tutteConferenze [i]->getData().year())).toLower().contains(arg1.toLower()))
+        {
+            ui->tutteConferenzeListWidget->addItem(tutteConferenze [i]->getNome() + "       " + QString::number(tutteConferenze [i]->getData().year()));
+            ui->tutteConferenzeListWidget->item(idxMessi)->setIcon(QIcon(":res/ConferenzaColor.png"));
+            ui->tutteConferenzeListWidget->item(idxMessi)->setCheckState(Qt::Unchecked);
+            indiciListe.push_back(i);
+            idxMessi++;
+        }
+    }
+}
+
 //Bottone Esegui della pagina "Misto"
 void MainWindow::on_eseguiButtonMisto_clicked()
 {
@@ -772,6 +816,9 @@ void MainWindow::on_eseguiButtonMisto_clicked()
             break;
         }
     }
+
+    if(ui->ricercaAvanzataConferenze->text() != "" && idxChecked != -1)
+        idxChecked = indiciListe [idxChecked];
 
     if(ui->conferenzeSimiliButton->isChecked())
     {
@@ -843,6 +890,27 @@ void MainWindow::on_eseguiButtonMisto_clicked()
 
 
 
+void MainWindow::on_ricercaAvanzataArticoli_textEdited(const QString &arg1)
+{
+    ui->tuttiArticoliListWidget->clear();
+    ui->dinamicListWidgetArticoli->clear();
+    indiciListe.clear();
+
+    int idxMessi = 0;
+    auto tuttiArticoli = gestore.getArticoli();
+    for(int i = 0; i < tuttiArticoli.size(); i++)
+    {
+        if((tuttiArticoli [i]->getTitolo()).toLower().contains(arg1.toLower()))
+        {
+            ui->tuttiArticoliListWidget->addItem(tuttiArticoli [i]->getTitolo() + "       "  + QString::number(tuttiArticoli [i]->getNumPagine()) + " Pagine");
+            ui->tuttiArticoliListWidget->item(idxMessi)->setIcon(QIcon(":res/ArticoloColor.png"));
+            ui->tuttiArticoliListWidget->item(idxMessi)->setCheckState(Qt::Unchecked);
+            indiciListe.push_back(i);
+            idxMessi++;
+        }
+    }
+}
+
 //Bottone esegui di ricerca Articoli
 void MainWindow::on_eseguiButtonArticoli_clicked()
 {
@@ -857,6 +925,9 @@ void MainWindow::on_eseguiButtonArticoli_clicked()
             break;
         }
     }
+
+    if(ui->ricercaAvanzataArticoli->text() != "" && idxChecked != -1)
+        idxChecked = indiciListe [idxChecked];
 
     if(ui->mostraArticoliInfluenzatiButton->isChecked())
     {
@@ -1126,4 +1197,3 @@ void MainWindow::on_infoProgButton_clicked()
     QMessageBox msg(QMessageBox::Information, "Informazioni sul progetto", text);
     msg.exec();
 }
-

@@ -77,10 +77,12 @@ class MainWindow : public QMainWindow
 
             void on_eseguiButtonArticoli_clicked();
 
-
             void on_ricercaAvanzataAutore_textEdited(const QString &arg1);
+            void on_ricercaAvanzataRiviste_textEdited(const QString &arg1);
+            void on_ricercaAvanzataArticoli_textEdited(const QString &arg1);
+            void on_ricercaAvanzataConferenze_textEdited(const QString &arg1);
 
-    signals:
+signals:
             void widgetClicked(QListWidget* itm);
             void rimuoviItem(QListWidget* itm);
 
