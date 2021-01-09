@@ -981,6 +981,12 @@ void MainWindow::on_leggiButton_clicked()
 {
     QString path = ui->percorsoLineEdit->text();
 
+    if(path == "")
+    {
+        path = QFileDialog::getOpenFileName(this, "Selezione il file di testo", QDir::homePath(), " Text File (*.txt)");
+        ui->percorsoLineEdit->setText(path);
+    }
+
     QFile file(path);
 
     //Apro il file in read only
